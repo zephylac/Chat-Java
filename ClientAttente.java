@@ -22,6 +22,11 @@ import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
 public class ClientAttente implements Runnable{
 
 	private Socket sock = null;
@@ -29,11 +34,11 @@ public class ClientAttente implements Runnable{
 	private ObjectInputStream reader = null;
 	private PrintWriter writerString;
 	private BufferedInputStream readerString;
-	private ObservableList<String> message;
-	private ObservableList<String> user;
+	private ObservableList<Text> message;
+	private ObservableList<Text> user;
 	private String name;
 
-		public ClientAttente(Socket sock, String name, ObservableList<String> message, ObservableList<String> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
+		public ClientAttente(Socket sock, String name, ObservableList<Text> message, ObservableList<Text> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
 		this.sock = sock;
 		this.name = name;
 
@@ -62,7 +67,12 @@ public class ClientAttente implements Runnable{
 		}
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Socket closed, lost connection?");
-		message.add("!DISCONNECT");
+
+		Text text = new Text("Deconnexion au serveur reussi\n");
+		text.setFill(Color.RED);
+		text.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+		message.add(text);
 		user.clear();
 
 	}
@@ -109,13 +119,13 @@ public class ClientAttente implements Runnable{
 	}
 
 
-	private ArrayList<String> readArray() throws IOException{
-		ArrayList<String> list = new ArrayList<String>();
+	private ArrayList<Text> readArray() throws IOException{
+		ArrayList<Text> list = new ArrayList<Text>();
 
 		try{
 
 			Object object = reader.readObject();
-			list = (ArrayList<String>) object;
+			list = (ArrayList<Text>) object;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -172,7 +182,7 @@ public class ClientAttente implements Runnable{
 			writer.writeInt(message.size()-1);
 			writer.flush();
 
-			ArrayList<String> test = readArray();
+			ArrayList<Text> test = readArray();
 			message.addAll(test);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -22,9 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -41,15 +38,21 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 
+import javafx.scene.text.TextFlow;
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
 public class ChatBox extends Parent{
 
 	private TextFlow chat = new TextFlow();
 	private Label label;
 	private VBox vbox = new VBox(10);
 	private Text textCo;
-	private ObservableList<String> messageList;
+	private ObservableList<Text> messageList;
 
-	public ChatBox(ObservableList<String> messageList,ConnexionBox connection){
+	public ChatBox(ObservableList<Text> messageList,ConnexionBox connection){
 
 		this.messageList = messageList;
 
@@ -79,36 +82,34 @@ public class ChatBox extends Parent{
 		List<Text> tempList = new ArrayList<>();
 
 
-		messageList.addListener(new ListChangeListener<String>() {
-			public void onChanged(Change<? extends String> change){
+		messageList.addListener(new ListChangeListener<Text>() {
+			public void onChanged(Change<? extends Text> change){
 				while(change.next()){
 					if( change.wasAdded()){
-						List<? extends String> list = change.getAddedSubList();
+						List<? extends Text> list = change.getAddedSubList();
 						System.out.println("Liste message : " + list);
-						for(String m : list){
-							switch(m){
-								case "!CONNECT" :
-									textCo = new Text("Connexion au serveur reussi\n");
-									textCo.setFill(Color.GREEN);
-									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
-									Platform.runLater(() ->{
-										connection.switchBtn(false);
-									});
-									break;
-								case "!DISCONNECT" :
-									textCo = new Text("Deconnexion au serveur reussi\n");
-									textCo.setFill(Color.RED);
-									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
-									Platform.runLater(() ->{
-										connection.switchBtn(true);
-									});
-									break;
-								default :
-									textCo = new Text(m + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-							}
-							tempList.add(textCo);
+						for(Text m : list){
+							//switch(m){
+								// case "!CONNECT" :
+								// 	textCo = new Text("Connexion au serveur reussi\n");
+								// 	textCo.setFill(Color.GREEN);
+								// 	textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+								// 	Platform.runLater(() ->{
+								// 		connection.switchBtn(false);
+								// 	});
+								// 	break;
+								// case "!DISCONNECT" :
+								// 	textCo = new Text("Deconnexion au serveur reussi\n");
+								// 	textCo.setFill(Color.RED);
+								// 	textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+								// 	Platform.runLater(() ->{
+								// 		connection.switchBtn(true);
+								// 	});
+								// 	break;
+							// 	default :
+							// 		textCo = m;
+							// }
+							tempList.add(m);
 						}
 
 						// Since it's not JavaFX thread. It will add the messages to

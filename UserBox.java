@@ -31,23 +31,29 @@ import javafx.collections.FXCollections;
 import java.util.List;
 import java.util.ArrayList;
 
+import javafx.scene.text.TextFlow;
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
+import javafx.application.Platform;
+
 public class UserBox extends Parent{
 
-	private TextArea user = new TextArea();
+	private TextFlow user = new TextFlow();
 	private Label label;
 	private VBox vbox = new VBox(10);
-	private ObservableList<String> userList;
+	private ObservableList<Text> userList;
 
-	public UserBox(ObservableList<String> userList){
+	public UserBox(ObservableList<Text> userList){
 
 		label = new Label("Connectés");
 		label.setMinWidth(50);
 		label.setMaxWidth(100);
 
-		user.setEditable(false);
 		user.setPrefWidth(200);
 		user.setPrefHeight(600);
-		user.setWrapText(true);
 		user.setPadding(new Insets(2, 2, 2, 2));
 
 		vbox.setAlignment(Pos.CENTER);
@@ -62,21 +68,39 @@ public class UserBox extends Parent{
 
 		this.userList = userList;
 
-		userList.addListener(new ListChangeListener<String>() {
-			public void onChanged(Change<? extends String> change){
+		List<Text> tempList = new ArrayList<>();
+
+		userList.addListener(new ListChangeListener<Text>() {
+			public void onChanged(Change<? extends Text> change){
 				while(change.next()){
 					if(change.wasAdded()){
-						List<? extends String> list = change.getAddedSubList();
-						for(String m : list){
-							user.appendText(m + "\n");
+						List<? extends Text> list = change.getAddedSubList();
+						for(Text m : list){
+
+							Text combined = new Text(m + "\n");
+							combined.setFill(Color.GREEN);
+							combined.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+							tempList.add(combined);
 						}
+
+						Platform.runLater(() ->{
+							user.getChildren().addAll(tempList);
+							tempList.clear();
+						});
+
 					}
-					if(change.wasRemoved()){
-						user.clear();
-						for(String m : change.getList()){
-							user.appendText(m + "\n");
-						}
-					}
+					// if(change.wasRemoved()){
+					//
+					// 	for(Text m : change.getList()){
+					//
+					// 		Text combined = new Text(m + "\n");
+					// 		combined.setFill(Color.GREEN);
+					// 		combined.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+					//
+					// 		user.add(combined);
+					// 	}
+					// }
 				}
 			}
 		});

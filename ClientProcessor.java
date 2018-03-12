@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.lang.ClassNotFoundException;
 
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
 public class ClientProcessor implements Runnable{
 
 
@@ -23,16 +28,16 @@ public class ClientProcessor implements Runnable{
 	private ObjectInputStream reader = null;
 	private PrintWriter writerString;
 	private BufferedInputStream readerString;
-	private List<String> message;
-	private Map<String, Color> user;
-	private Map<String, PrintWriter> userString;
-	private String username;
+	private List<Text> message;
+	private Map<Text, PrintWriter> user;
+	private Text username;
+	private Color color;
 
-	public ClientProcessor(Socket pSock, List<String> message, Map<String, ObjectOutputStream> user, Map<String, PrintWriter> userString){
+	public ClientProcessor(Socket pSock, List<Text> message, Map<Text, PrintWriter> user){
 		sock = pSock;
 		this.message = message;
 		this.user = user;
-		this.userString = userString;
+		this.color = Color.BLACK;
 		try {
 			writer = new ObjectOutputStream(sock.getOutputStream());
 			reader = new ObjectInputStream(sock.getInputStream());
@@ -47,27 +52,30 @@ public class ClientProcessor implements Runnable{
 
 	public void connexionUser(){
 		try{
-			// String response = (String)(reader.readObject());
 			String response = read();
 			System.out.println("Server : Login recu de " + response);
-			username = response;
-			if(user.containsKey(username)){
+
+			username = new Text(response);
+			username.setFill(color);
+			username.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+			// On verifie qu'une personne avec le meme pseudo n'existe pas
+			if(checkUser(response) != null){
 				writerString.write("LOGIN : KO");
 				writerString.flush();
 				System.out.println("Server : LOGIN 	: KO " + username);
 			}
 			else{
-				user.put(username, Color.BLACK);
-				userString.put(username, writerString);
+
+				user.put(username, writerString);
 				response = "";
 
 				writerString.write("LOGIN : OK");
 				writerString.flush();
 				System.out.println("Server : LOGIN 	: OK " + username);
 
-				List<String> tempList = new ArrayList<String>(user.keySet());
-				updateAll(tempList,"USERS");
-				updateOne(username,message,"MESSAGES");
+				updateAll("USERS");
+				updateOne(username,"MESSAGES");
 			}
 		}catch(IOException e){
 			e.printStackTrace();
@@ -78,7 +86,6 @@ public class ClientProcessor implements Runnable{
 		try{
 			System.out.println("Server : Logout recu de " + username);
 			user.remove(username);
-			userString.remove(username);
 
 			writerString.write("LOGOUT : OK");
 			writerString.flush();
@@ -88,32 +95,34 @@ public class ClientProcessor implements Runnable{
 			reader = null;
 			sock.close();
 
-			List<String> tempList = new ArrayList<String>(user.keySet());
-			updateAll(tempList,"USERS");
+			updateAll("USERS");
 
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
-	public void updateAll(List<String> list, String msg){
+	public void updateAll(String msg){
 		System.out.println("Server : Envoie de requete d'update a tous les utilisateurs sur " + msg);
-		for(Map.Entry<String,ObjectOutputStream> u : user.entrySet()){
+		for(Map.Entry<Text,PrintWriter> u : user.entrySet()){
 			//System.out.println("Server : Envoie requete d'update ->" + u.getKey() + " sur " + msg);
-			updateOne(u.getKey(), list, msg);
+			updateOne(u.getKey(), msg);
 		}
 	}
 
-	public void updateOne(String userData, List<String> list, String msg){
-			userString.get(userData).write(msg);
-			userString.get(userData).flush();
+
+	public void updateOne(Text userData, String msg){
+			user.get(userData).write(msg);
+			user.get(userData).flush();
 			System.out.println("Server : " + msg + " : " + userData);
 	}
+
+
 
 	//Le traitement lancé dans un thread séparé
 	public void run(){
 		int nb;
-		ArrayList<String> ArrayToSend;
+		ArrayList<Text> ArrayToSend;
 
 		//tant que la connexion est active, on traite les demandes
 		connexionUser();
@@ -132,23 +141,49 @@ public class ClientProcessor implements Runnable{
 					String[] splitted = cutResponse.split(":");
 					String sendTo = splitted[0];
 					String text = splitted[1];
-					System.out.println("Serveur : PM recu du client " + username + "@" + sendTo + " : " + text);
-					message.add("@"+sendTo+ " from "+ username+ " : " + text);
-					updateOne(username,message,"MESSAGES");
-					updateOne(sendTo,message,"MESSAGES");
+
+					Text sendToText = checkUser(sendTo);
+
+					if(sendToText != null){
+
+						System.out.println("Serveur : PM recu du client " + username + "@" + sendTo + " : " + text);
+
+						Text messageText = new Text(text);
+						messageText.setFill(Color.BLACK);
+						messageText.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+						Text combined = new Text("@"+sendToText+ " from "+ username+ " : " + messageText);
+						combined.setFill(Color.BLACK);
+						combined.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+						message.add(combined);
+						updateOne(username,"MESSAGES");
+
+						updateOne(sendToText,"MESSAGES");
+					}
 				}
 				else if (response.startsWith("MSG:") ){
 					String cutResponse = response.substring(4);
-					message.add(username + " : " + cutResponse);
+
+					Text messageText = new Text(cutResponse);
+					messageText.setFill(Color.BLACK);
+					messageText.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+					Text combined = new Text(username + " : " + messageText + "\n");
+					combined.setFill(Color.BLACK);
+					combined.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+					message.add(combined);
+
 					System.out.println("Serveur : MSG recu du client "+ username +" : "+ cutResponse);
-					updateAll(message,"MESSAGES");
+					updateAll("MESSAGES");
 				}
-				else if (response.startsWith("COLOR:")){
-					String cutResponse = response.substring(6);
-					if(checkColor(cutResponse)){
-						
-					}
-				}
+				// else if (response.startsWith("COLOR:")){
+				// 	String cutResponse = response.substring(6);
+				// 	if(checkColor(cutResponse)){
+				//
+				// 	}
+				// }
 				else{
 
 					switch(response.toUpperCase()){
@@ -156,7 +191,7 @@ public class ClientProcessor implements Runnable{
 						case "USERS" :
 							nb = reader.readInt();
 
-							ArrayToSend = new ArrayList<String>(user.keySet());
+							ArrayToSend = new ArrayList<Text>(user.keySet());
 							writer.writeObject(ArrayToSend);
 							writer.flush();
 							System.out.println("Server : envoie array : " + ArrayToSend + " -> " + username);
@@ -165,7 +200,7 @@ public class ClientProcessor implements Runnable{
 						case "MESSAGES":
 							nb = reader.readInt();
 
-							ArrayList<String> temp = filterArray(username);
+							ArrayList<Text> temp = filterArray(username);
 							ArrayToSend = new ArrayList<>(temp.subList(nb,temp.size()));
 							writer.writeObject(ArrayToSend);
 							writer.flush();
@@ -185,9 +220,7 @@ public class ClientProcessor implements Runnable{
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Server : username : socket ferme");
 		user.remove(username);
-		userString.remove(username);
-		List<String> tempList = new ArrayList<String>(user.keySet());
-		updateAll(tempList,"USERS");
+		updateAll("USERS");
 
 	}
 
@@ -212,20 +245,30 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
-	private ArrayList<String> filterArray(String user){
-		ArrayList<String> response = new ArrayList<>();
-		for(String m : message){
+	private ArrayList<Text> filterArray(Text user){
+		ArrayList<Text> response = new ArrayList<>();
+		for(Text t : message){
+			String m = t.getText();
 			if (m.startsWith("@")){
 				String cutResponse = m.substring(1);
 				String[] splitted = cutResponse.split(" from ",2);
 				if(splitted[0].equals(user) || splitted[1].equals(user)){
-					response.add(m);
+					response.add(t);
 				}
 			}
 			else{
-				response.add(m);
+				response.add(t);
 			}
 		}
 		return response;
+	}
+
+	private Text checkUser(String username){
+		for(Map.Entry<Text,PrintWriter> u : user.entrySet()){
+			if(u.getKey().getText().equals(username)){
+				return u.getKey();
+			}
+		}
+		return null;
 	}
 }

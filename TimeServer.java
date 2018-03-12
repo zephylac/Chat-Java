@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
+import javafx.scene.text.Text;
+
 public class TimeServer {
 
 
@@ -23,9 +25,8 @@ public class TimeServer {
 	private String host = "127.0.0.1";
 	private ServerSocket server = null;
 	private boolean isRunning = true;
-	private List<String> message = new ArrayList<>();
-	private Map<String, ObjectOutputStream> user = new HashMap<>();
-	private Map<String, PrintWriter> userString = new HashMap<>();
+	private List<Text> message = new ArrayList<>();
+	private Map<Text, PrintWriter> user = new HashMap<>();
 
 	public TimeServer(){
 		try {
@@ -62,7 +63,7 @@ public class TimeServer {
 						Socket client = server.accept();
 						//Une fois reçue, on la traite dans un thread séparé
 						System.out.println("Connexion cliente reçue -> Nouveau thread");
-						Thread t = new Thread(new ClientProcessor(client,message,user, userString));
+						Thread t = new Thread(new ClientProcessor(client,message,user));
 						t.start();
 					} catch (IOException e) {
 						e.printStackTrace();

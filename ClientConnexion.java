@@ -19,6 +19,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.lang.ClassNotFoundException;
 
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
 
 public class ClientConnexion{
 
@@ -36,13 +41,13 @@ public class ClientConnexion{
 	private Thread t1;
 	private boolean estConnecte;
 
-	private ObservableList<String> message;
-	private ObservableList<String> user;
+	private ObservableList<Text> message;
+	private ObservableList<Text> user;
 
 	public ClientConnexion(){
 
-		List<String> l1  = new ArrayList<String>();
-		List<String> l2  = new ArrayList<String>();
+		List<Text> l1  = new ArrayList<Text>();
+		List<Text> l2  = new ArrayList<Text>();
 
 		estConnecte = false;
 		this.message = FXCollections.observableList(l1);
@@ -94,7 +99,12 @@ public class ClientConnexion{
 					estConnecte = true;
 					System.out.println(name + ": Lancement de l'attente msg");
 					message.clear();
-					message.add("!CONNECT");
+
+					Text text = new Text("Connexion au serveur reussi\n");
+					text.setFill(Color.GREEN);
+					text.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+
+					message.add(text);
 
 					break;
 				case "LOGIN : KO" :
@@ -131,11 +141,11 @@ public class ClientConnexion{
 
 	//Méthode pour lire les réponses du serveur
 
-	public ObservableList<String> getMessage(){
+	public ObservableList<Text> getMessage(){
 		return message;
 	}
 
-	public ObservableList<String> getUser(){
+	public ObservableList<Text> getUser(){
 		return user;
 	}
 
