@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
+import javafx.scene.paint.Color;
+
 public class TimeServer {
 
 
@@ -24,7 +26,7 @@ public class TimeServer {
 	private ServerSocket server = null;
 	private boolean isRunning = true;
 	private List<String> message = new ArrayList<>();
-	private Map<String, ObjectOutputStream> user = new HashMap<>();
+	private Map<String, Color> user = new HashMap<>();
 	private Map<String, PrintWriter> userString = new HashMap<>();
 
 	public TimeServer(){

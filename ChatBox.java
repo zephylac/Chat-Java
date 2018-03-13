@@ -41,6 +41,10 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 
+import java.io.StringReader;
+import javax.xml.bind.*;
+import javax.xml.transform.stream.StreamSource;
+
 public class ChatBox extends Parent{
 
 	private TextFlow chat = new TextFlow();
@@ -104,9 +108,9 @@ public class ChatBox extends Parent{
 									});
 									break;
 								default :
-									textCo = new Text(m + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									//textCo = new Text(m + "\n");
+									//textCo.setFill(Color.BLACK);
+									//textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 							}
 							tempList.add(textCo);
 						}
