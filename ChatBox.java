@@ -52,8 +52,9 @@ public class ChatBox extends Parent{
 	private VBox vbox = new VBox(10);
 	private Text textCo;
 	private ObservableList<String> messageList;
+	private ObservableList<UserData> userList;
 
-	public ChatBox(ObservableList<String> messageList,ConnexionBox connection){
+	public ChatBox(ObservableList<String> messageList,ObservableList<UserData> userList,ConnexionBox connection){
 
 		this.messageList = messageList;
 
@@ -62,11 +63,9 @@ public class ChatBox extends Parent{
 		label.setMaxWidth(100);
 		label.setAlignment(Pos.CENTER);
 
-		//chat.setEditable(false);
 		chat.setPrefWidth(600);
 		chat.setPrefHeight(400);
-		//chat.setWrapText(true);
-		chat.setBorder(new Border(new BorderStroke(Color.BLACK,BorderStrokeStyle.SOLID,new CornerRadii(15), BorderWidths.DEFAULT)));
+		chat.setBorder(new Border(new BorderStroke(Color.GRAY,BorderStrokeStyle.SOLID,new CornerRadii(15), BorderWidths.DEFAULT)));
 		chat.setPadding(new Insets(2, 2, 2, 2));
 
 		vbox.setAlignment(Pos.CENTER);
@@ -88,7 +87,6 @@ public class ChatBox extends Parent{
 				while(change.next()){
 					if( change.wasAdded()){
 						List<? extends String> list = change.getAddedSubList();
-						System.out.println("Liste message : " + list);
 						for(String m : list){
 							switch(m){
 								case "!CONNECT" :
@@ -108,9 +106,18 @@ public class ChatBox extends Parent{
 									});
 									break;
 								default :
-									//textCo = new Text(m + "\n");
-									//textCo.setFill(Color.BLACK);
-									//textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									String[] splitted = m.split(" :",2);
+
+									Text userColoredName = new Text(splitted[0]);
+									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
+									userColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									textCo = new Text(" : " + splitted[1] + "\n");
+									textCo.setFill(Color.BLACK);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+
+									tempList.add(userColoredName);
 							}
 							tempList.add(textCo);
 						}
@@ -125,6 +132,15 @@ public class ChatBox extends Parent{
 				}
 			}
 		});
+	}
+
+	private UserData getUserDataFromString(String user,List<UserData> list){
+		for(UserData u : list){	
+			if(u.getUsername().equals(user)){
+				return u;
+			}
+		}
+		return null;
 	}
 
 	public TextFlow getChat(){

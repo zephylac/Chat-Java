@@ -26,8 +26,7 @@ public class TimeServer {
 	private ServerSocket server = null;
 	private boolean isRunning = true;
 	private List<String> message = new ArrayList<>();
-	private Map<String, Color> user = new HashMap<>();
-	private Map<String, PrintWriter> userString = new HashMap<>();
+	private Map<UserData, PrintWriter> userString = new HashMap<>();
 
 	public TimeServer(){
 		try {
@@ -64,7 +63,7 @@ public class TimeServer {
 						Socket client = server.accept();
 						//Une fois reçue, on la traite dans un thread séparé
 						System.out.println("Connexion cliente reçue -> Nouveau thread");
-						Thread t = new Thread(new ClientProcessor(client,message,user, userString));
+						Thread t = new Thread(new ClientProcessor(client,message, userString));
 						t.start();
 					} catch (IOException e) {
 						e.printStackTrace();

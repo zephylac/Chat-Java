@@ -37,12 +37,12 @@ public class ClientConnexion{
 	private boolean estConnecte;
 
 	private ObservableList<String> message;
-	private ObservableList<String> user;
+	private ObservableList<UserData> user;
 
 	public ClientConnexion(){
 
 		List<String> l1  = new ArrayList<String>();
-		List<String> l2  = new ArrayList<String>();
+		List<UserData> l2  = new ArrayList<UserData>();
 
 		estConnecte = false;
 		this.message = FXCollections.observableList(l1);
@@ -53,11 +53,16 @@ public class ClientConnexion{
 	public void envoieMessage(String str){
 			if(str.startsWith("@")){
 				String[] temp = str.split(" ");
-				System.out.println("0 :" + temp[0] +" 1:" + temp[1]);
 				writerString.write("PM:"+temp[0]+":"+temp[1]);
 				writerString.flush();
 				System.out.println(name + " : Envoie message prive a "+temp[0] + ": " + temp[1]);
 			}
+			else if(str.startsWith("!color")){
+				String temp = str.substring(7);
+				writerString.write("COLOR:"+temp);
+				writerString.flush();
+				System.out.println(name + " : Couleur : "+temp);
+				}
 			else{
 				writerString.write("MSG:"+str);
 				writerString.flush();
@@ -135,7 +140,7 @@ public class ClientConnexion{
 		return message;
 	}
 
-	public ObservableList<String> getUser(){
+	public ObservableList<UserData> getUser(){
 		return user;
 	}
 

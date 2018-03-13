@@ -64,7 +64,7 @@ public class Test extends Application {
 		ConnexionBox connect = new ConnexionBox();
 		root.getChildren().add(connect);
 
-		ChatBox chat = new ChatBox(c1.getMessage(),connect);
+		ChatBox chat = new ChatBox(c1.getMessage(),c1.getUser(),connect);
 		root.getChildren().add(chat);
 
 

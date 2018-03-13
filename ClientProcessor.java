@@ -27,14 +27,12 @@ public class ClientProcessor implements Runnable{
 	private PrintWriter writerString;
 	private BufferedInputStream readerString;
 	private List<String> message;
-	private Map<String, Color> userColor;
-	private Map<String, PrintWriter> userString;
-	private String username;
+	private Map<UserData, PrintWriter> userString;
+	private UserData user;
 
-	public ClientProcessor(Socket pSock, List<String> message, Map<String, Color> userColor, Map<String, PrintWriter> userString){
+	public ClientProcessor(Socket pSock, List<String> message, Map<UserData, PrintWriter> userString){
 		sock = pSock;
 		this.message = message;
-		this.userColor = userColor;
 		this.userString = userString;
 
 		try {
@@ -54,25 +52,24 @@ public class ClientProcessor implements Runnable{
 			// String response = (String)(reader.readObject());
 			String response = read();
 			System.out.println("Server : Login recu de " + response);
-			username = response;
-			if(userString.containsKey(username)){
+
+			UserData temp = getUserDataFromString(response);
+			if(temp != null){
 				writerString.write("LOGIN : KO");
 				writerString.flush();
-				System.out.println("Server : LOGIN 	: KO " + username);
+				System.out.println("Server : LOGIN 	: KO " + response);
 			}
 			else{
-				userColor.put(username, Color.BLACK);
-				userString.put(username, writerString);
+				this.user = new UserData(response, Color.BLACK);
+				userString.put(user, writerString);
 				response = "";
 
 				writerString.write("LOGIN : OK");
 				writerString.flush();
-				System.out.println("Server : LOGIN 	: OK " + username);
-
-				message.add("<Text text=\"red text.\" style=\"-fx-stroke: red\"/>");
+				System.out.println("Server : LOGIN 	: OK " + response);
 
 				updateAll("USERS");
-				updateOne(username,"MESSAGES");
+				updateOne(user,"MESSAGES");
 			}
 		}catch(IOException e){
 			e.printStackTrace();
@@ -81,13 +78,12 @@ public class ClientProcessor implements Runnable{
 
 	public void deconnexionUser(){
 		try{
-			System.out.println("Server : Logout recu de " + username);
-			userColor.remove(username);
-			userString.remove(username);
+			System.out.println("Server : Logout recu de " + user.getUsername());
+			userString.remove(user);
 
 			writerString.write("LOGOUT : OK");
 			writerString.flush();
-			System.out.println("Server : LOGOUT : OK " + username);
+			System.out.println("Server : LOGOUT : OK " + user.getUsername());
 
 			writer = null;
 			reader = null;
@@ -102,13 +98,13 @@ public class ClientProcessor implements Runnable{
 
 	public void updateAll(String msg){
 		System.out.println("Server : Envoie de requete d'update a tous les utilisateurs sur " + msg);
-		for(Map.Entry<String,Color> u : userColor.entrySet()){
+		for(Map.Entry<UserData,PrintWriter> u : userString.entrySet()){
 			//System.out.println("Server : Envoie requete d'update ->" + u.getKey() + " sur " + msg);
 			updateOne(u.getKey(), msg);
 		}
 	}
 
-	public void updateOne(String userData, String msg){
+	public void updateOne(UserData userData, String msg){
 			userString.get(userData).write(msg);
 			userString.get(userData).flush();
 			System.out.println("Server : " + msg + " : " + userData);
@@ -117,7 +113,8 @@ public class ClientProcessor implements Runnable{
 	//Le traitement lancé dans un thread séparé
 	public void run(){
 		int nb;
-		ArrayList<String> ArrayToSend;
+		ArrayList<String> ArrayMessageToSend;
+		ArrayList<UserData> ArrayUserToSend;
 
 		//tant que la connexion est active, on traite les demandes
 		connexionUser();
@@ -136,43 +133,50 @@ public class ClientProcessor implements Runnable{
 					String[] splitted = cutResponse.split(":");
 					String sendTo = splitted[0];
 					String text = splitted[1];
-					System.out.println("Serveur : PM recu du client " + username + "@" + sendTo + " : " + text);
-					message.add("@"+sendTo+ " from "+ username+ " : " + text);
-					updateOne(username,"MESSAGES");
-					updateOne(sendTo,"MESSAGES");
+
+					UserData sendToData= getUserDataFromString(sendTo);
+
+					System.out.println("Serveur : PM recu du client " + user.getUsername() + "@" + sendTo + " : " + text);
+					message.add("@"+sendTo+ " from "+ user.getUsername()+ " : " + text);
+					updateOne(user,"MESSAGES");
+					updateOne(sendToData,"MESSAGES");
 				}
 				else if (response.startsWith("MSG:") ){
 					String cutResponse = response.substring(4);
-					message.add(username + " : " + cutResponse);
-					System.out.println("Serveur : MSG recu du client "+ username +" : "+ cutResponse);
+					message.add(user.getUsername() + " : " + cutResponse);
+					System.out.println("Serveur : MSG recu du client "+ user.getUsername() +" : "+ cutResponse);
 					updateAll("MESSAGES");
 				}
 				else if (response.startsWith("COLOR:")){
 					String cutResponse = response.substring(6);
-					userColor.remove(username);
-					userColor.put(username, checkColor(cutResponse));
+					userString.remove(user);
+					user = new UserData(user.getUsername(), checkColor(cutResponse));
+					//user.setColor(checkColor(cutResponse));
+					userString.put(user, writerString);
+					System.out.println("Serveur : Couleur recu du client "+ user.getUsername() +" : "+ checkColor(cutResponse).toString());
+					updateAll("USERS");
 				}
 				else{
 
 					switch(response.toUpperCase()){
 						case "LOGOUT": deconnexionUser();break;
 						case "USERS" :
-							nb = reader.readInt();
+							//nb = reader.readInt();
 
-							ArrayToSend = new ArrayList<String>(userColor.keySet());
-							writer.writeObject(ArrayToSend);
+							ArrayUserToSend = new ArrayList<UserData>(userString.keySet());
+							writer.writeObject(ArrayUserToSend);
 							writer.flush();
-							System.out.println("Server : envoie array : " + ArrayToSend + " -> " + username);
+							System.out.println("Server : envoie array : " + ArrayUserToSend + " -> " + user.getUsername());
 							break;
 
 						case "MESSAGES":
 							nb = reader.readInt();
 
-							ArrayList<String> temp = filterArray(username);
-							ArrayToSend = new ArrayList<>(temp.subList(nb,temp.size()));
-							writer.writeObject(ArrayToSend);
+							ArrayList<String> temp = filterArray(user.getUsername());
+							ArrayMessageToSend = new ArrayList<>(temp.subList(nb,temp.size()));
+							writer.writeObject(ArrayMessageToSend);
 							writer.flush();
-							System.out.println("Server : envoie array : " + ArrayToSend + " -> " + username);
+							System.out.println("Server : envoie array : " + ArrayMessageToSend + " -> " + user.getUsername());
 							break;
 
 						default :toSend = "Commande inconnu !";break;
@@ -187,9 +191,7 @@ public class ClientProcessor implements Runnable{
 		}
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Server : username : socket ferme");
-		userColor.remove(username);
-		userString.remove(username);
-		List<String> tempList = new ArrayList<String>(userColor.keySet());
+		userString.remove(user);
 		updateAll("USERS");
 
 	}
@@ -234,9 +236,21 @@ public class ClientProcessor implements Runnable{
 
 	private Color checkColor(String color){
 		switch(color.toUpperCase()){
+			case "RED" : return Color.RED;
+			case "ORANGE" : return Color.ORANGE;
 			case "BLACK" : return Color.BLACK;
 			case "YELLOW" : return Color.YELLOW;
-			default : return Color.BLACK;
+			default : return Color.YELLOW;
 		}
 	}
+
+	private UserData getUserDataFromString(String user){
+		for(Map.Entry<UserData,PrintWriter> u : userString.entrySet()){
+			if(u.getKey().getUsername().equals(user)){
+				return u.getKey();
+			}
+		}
+		return null;
+	}
+
 }

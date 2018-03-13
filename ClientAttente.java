@@ -30,10 +30,10 @@ public class ClientAttente implements Runnable{
 	private PrintWriter writerString;
 	private BufferedInputStream readerString;
 	private ObservableList<String> message;
-	private ObservableList<String> user;
+	private ObservableList<UserData> user;
 	private String name;
 
-		public ClientAttente(Socket sock, String name, ObservableList<String> message, ObservableList<String> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
+		public ClientAttente(Socket sock, String name, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
 		this.sock = sock;
 		this.name = name;
 
@@ -109,13 +109,27 @@ public class ClientAttente implements Runnable{
 	}
 
 
-	private ArrayList<String> readArray() throws IOException{
+	private ArrayList<String> readMessageArray() throws IOException{
 		ArrayList<String> list = new ArrayList<String>();
 
 		try{
-
 			Object object = reader.readObject();
 			list = (ArrayList<String>) object;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		System.out.println(name + " : On lit une array : "+ list);
+		return list;
+	}
+
+	private ArrayList<UserData> readUserArray() throws IOException{
+		ArrayList<UserData> list = new ArrayList<UserData>();
+
+		try{
+			Object object = reader.readObject();
+			list = (ArrayList<UserData>) object;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -152,11 +166,11 @@ public class ClientAttente implements Runnable{
 			writerString.write("USERS");
 			writerString.flush();
 
-			System.out.println(name + " : Users -> on envoie la taille de notre liste d'user, taille : " + user.size());
-			writer.writeInt(user.size());
-			writer.flush();
+			//System.out.println(name + " : Users -> on envoie la taille de notre liste d'user, taille : " + user.size());
+			//writer.writeInt(user.size());
+			//writer.flush();
 
-			user.setAll(readArray());
+			user.setAll(readUserArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -172,7 +186,7 @@ public class ClientAttente implements Runnable{
 			writer.writeInt(message.size()-1);
 			writer.flush();
 
-			ArrayList<String> test = readArray();
+			ArrayList<String> test = readMessageArray();
 			message.addAll(test);
 		} catch (IOException e) {
 			e.printStackTrace();

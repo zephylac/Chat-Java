@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Stop;
-import javafx.scene.text.Text;
 import javafx.scene.effect.Reflection;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.text.Font;
@@ -31,23 +30,36 @@ import javafx.collections.FXCollections;
 import java.util.List;
 import java.util.ArrayList;
 
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+
+import javafx.scene.text.TextFlow;
+import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
+import javafx.application.Platform;
+
 public class UserBox extends Parent{
 
-	private TextArea user = new TextArea();
+	private TextFlow user = new TextFlow();
 	private Label label;
 	private VBox vbox = new VBox(10);
-	private ObservableList<String> userList;
+	private ObservableList<UserData> userList;
 
-	public UserBox(ObservableList<String> userList){
+	public UserBox(ObservableList<UserData> userList){
 
 		label = new Label("Connectés");
 		label.setMinWidth(50);
 		label.setMaxWidth(100);
 
-		user.setEditable(false);
 		user.setPrefWidth(200);
 		user.setPrefHeight(600);
-		user.setWrapText(true);
+		user.setBorder(new Border(new BorderStroke(Color.GRAY,BorderStrokeStyle.SOLID,new CornerRadii(15), BorderWidths.DEFAULT)));
 		user.setPadding(new Insets(2, 2, 2, 2));
 
 		vbox.setAlignment(Pos.CENTER);
@@ -62,23 +74,32 @@ public class UserBox extends Parent{
 
 		this.userList = userList;
 
-		userList.addListener(new ListChangeListener<String>() {
-			public void onChanged(Change<? extends String> change){
+		List<Text> tempList = new ArrayList<>();
+
+		userList.addListener(new ListChangeListener<UserData>() {
+			public void onChanged(Change<? extends UserData> change){
 				while(change.next()){
 					if(change.wasAdded()){
-						List<? extends String> list = change.getAddedSubList();
-						for(String m : list){
-							user.appendText(m + "\n");
-						}
-					}
-					if(change.wasRemoved()){
-						user.clear();
-						for(String m : change.getList()){
-							user.appendText(m + "\n");
+						List<? extends UserData> list = change.getAddedSubList();
+						for(UserData u : list){
+							tempList.add(userDataToText(u));
 						}
 					}
 				}
+				Platform.runLater(() ->{
+					user.getChildren().clear();
+					user.getChildren().addAll(tempList);
+					tempList.clear();
+				});
 			}
 		});
+	}
+
+	public Text userDataToText(UserData u){
+		Text combined = new Text(u.getUsername() + "\n");
+		combined.setFill(u.getColor());
+		combined.setFont(Font.font("Helvetica", FontWeight.NORMAL, 16));
+
+		return combined;
 	}
 }
