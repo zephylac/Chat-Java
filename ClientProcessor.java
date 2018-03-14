@@ -1,5 +1,3 @@
-// package Timer;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,6 +45,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	// Connect user to the server
 	public void connexionUser(){
 		try{
 			// String response = (String)(reader.readObject());
@@ -76,6 +75,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	// Disconnect user from the server
 	public void deconnexionUser(){
 		try{
 			System.out.println("Server : Logout recu de " + user.getUsername());
@@ -96,6 +96,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	// UpdateAll user with a msg
 	public void updateAll(String msg){
 		System.out.println("Server : Envoie de requete d'update a tous les utilisateurs sur " + msg);
 		for(Map.Entry<UserData,PrintWriter> u : userString.entrySet()){
@@ -104,6 +105,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	// UpdateOne user with a msg
 	public void updateOne(UserData userData, String msg){
 			userString.get(userData).write(msg);
 			userString.get(userData).flush();
@@ -196,7 +198,7 @@ public class ClientProcessor implements Runnable{
 
 	}
 
-	//Méthode pour lire les réponses du serveur
+	//Method to read string since readUTF() has somme problem
 	private String read() throws IOException{
 		try{
 			String response = "";
@@ -217,13 +219,16 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	//Method to filter the Array for a specified user
 	private ArrayList<String> filterArray(String user){
 		ArrayList<String> response = new ArrayList<>();
 		for(String m : message){
 			if (m.startsWith("@")){
 				String cutResponse = m.substring(1);
 				String[] splitted = cutResponse.split(" from ",2);
-				if(splitted[0].equals(user) || splitted[1].equals(user)){
+				String[] splitted2 = splitted[1].split(" : ",2);
+				System.out.println("SERVER : "+user+" : FilterArray :"+ splitted[0] +","+splitted2[0]);
+				if(splitted[0].equals(user) || splitted2[0].equals(user)){
 					response.add(m);
 				}
 			}
@@ -234,6 +239,7 @@ public class ClientProcessor implements Runnable{
 		return response;
 	}
 
+	//Check if it's a valid color if not black will be chosen
 	private Color checkColor(String color){
 		switch(color.toUpperCase()){
 			case "RED" : return Color.RED;
@@ -244,6 +250,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
+	// Retrieve userData from string
 	private UserData getUserDataFromString(String user){
 		for(Map.Entry<UserData,PrintWriter> u : userString.entrySet()){
 			if(u.getKey().getUsername().equals(user)){

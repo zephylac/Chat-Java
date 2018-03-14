@@ -1,21 +1,10 @@
-import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
-import javafx.scene.effect.Reflection;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.text.Font;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
+
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -47,12 +36,14 @@ public class ConnexionBox extends Parent{
 
 	public ConnexionBox(){
 
+		// Shape for ConnexionBox
 		Rectangle rect = new Rectangle();
 		rect.setWidth(80);
 		rect.setHeight(40);
 		rect.setArcWidth(15);
 		rect.setArcHeight(15);
 
+		//GridPane for all the input box and button
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(20, 20, 20, 20));
 		grid.setVgap(20);
@@ -65,24 +56,28 @@ public class ConnexionBox extends Parent{
 		column2.setPercentWidth(50);
 		grid.getColumnConstraints().addAll(column1,column2);
 
+		//Set default values
 		ip.getInput().setText("127.0.0.1");
-		port.getInput().setText("2346");
+		//port.getInput().setText("2346");
 
+		//Fill the grid
 		grid.add(nom.getInputBox(),0,0);
 		grid.add(ip.getInputBox(),0,1);
 		grid.add(port.getInputBox(),1,1);
 
+		// Button Connect
 		btnConnecte.setMaxWidth(300);
 		btnConnecte.setPrefWidth(300);
 		btnConnecte.setMinWidth(100);
 		btnConnecte.setAlignment(Pos.CENTER);
 
+		// button Disconnect
 		btnDeconnecte.setMaxWidth(300);
 		btnDeconnecte.setPrefWidth(300);
 		btnDeconnecte.setMinWidth(100);
 		btnDeconnecte.setAlignment(Pos.CENTER);
 
-
+		//Hbox for Button
 		hbBtn.setAlignment(Pos.CENTER);
 		hbBtn.setPrefWidth(300);
 		hbBtn.getChildren().add(btnConnecte);
@@ -93,6 +88,9 @@ public class ConnexionBox extends Parent{
 		this.setTranslateY(0);
 		this.getChildren().add(grid);
 
+
+		// Creates Binding to check values
+
 		BooleanBinding userField = Bindings.createBooleanBinding(()->{
 			if (nom.getInput().getText().length() != 0){
 				return true;
@@ -102,63 +100,72 @@ public class ConnexionBox extends Parent{
 			}
 		},nom.getInput().textProperty());
 		BooleanBinding ipField   = Bindings.createBooleanBinding(()->{
-			if (ip.getInput().getText().length() != 0){
-				return true;
+			if (ip.getInput().getText().length() != 0 ){
+					return true;
 			}
-			else{
-				return false;
-			}
+			return false;
 		},ip.getInput().textProperty());
 		BooleanBinding portField = Bindings.createBooleanBinding(()->{
 			if (port.getInput().getText().length() != 0){
-				return true;
+				int test = Integer.parseInt(port.getInput().getText());
+				if( test > 0 && test < 65536){
+					return true;
+				}
 			}
-			else{
-				return false;
-			}
+			return false;
 		},port.getInput().textProperty());
 
 		btnConnecte.disableProperty().bind(userField.not().or(ipField.not().or(portField.not())));
 
+		// Set TextFormatter on IP input to only allow valid ip
+		String regex = makePartialIPRegex();
+		final UnaryOperator<Change> ipAddressFilter = c -> {
+		String text = c.getControlNewText();
+			if  (text.matches(regex)) {
+				return c ;
+			} else {
+				return null ;
+			}
+		};
 
-		// UnaryOperator<Change> portFilter = change -> {
-		// 	String input = change.getText();
-		// 	if(input.matches("^(6553[0-5]|655[0-2]\\d|65[0-4]\\d\\d|6[0-4]\\d{3}|[1-5]\\d{4}|[2-9]\\d{3}|1[1-9]\\d{2}|10[3-9]\\d|102[4-9])$")){
-		// 		return change;
-		// 	}
-		// 	return null;
-		// };
-		// port.getInput().setTextFormatter(new TextFormatter<String>(portFilter));
-		//
-		// UnaryOperator<Change> ipFilter = change -> {
-		// 	String input = change.getText();
-		// 	if(isValidInet4Address(input)){
-		// 		return change;
-		// 	}
-		// 	return null;
-		// };
-		//
-		// ip.getInput().setTextFormatter(new TextFormatter<String>(ipFilter));
+		ip.getInput().setTextFormatter(new TextFormatter<>(ipAddressFilter));
+
+		// Set TextFormatter on port input to only allow valid port number
+		String regex2 = "^$|^(0|[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
+		final UnaryOperator<Change> portFilter = c -> {
+		String text = c.getControlNewText();
+			if  (text.matches(regex2)) {
+				return c ;
+			} else {
+				return null ;
+			}
+		};
+
+		port.getInput().setTextFormatter(new TextFormatter<>(portFilter));
 
 
 	}
-
+	//Get connect button
 	public Button getCoBtn(){
 		return btnConnecte;
 	}
 
+	//get disconnect button
 	public Button getDecoBtn(){
 		return btnDeconnecte;
 	}
 
+	// Get user input
 	public String getUser(){
 		return nom.getInput().getText();
 	}
 
+	// Get ip input
 	public String getIP(){
 		return ip.getInput().getText();
 	}
 
+	// Get port input
 	public int getPort(){
 		String temp = port.getInput().getText();
 		if(!temp.equals("")){
@@ -169,6 +176,7 @@ public class ConnexionBox extends Parent{
 		}
 	}
 
+	// Switch between connect and disconnect button
 	public void switchBtn(boolean b1){
 		// If value is set to true then the button will be on connect mode
 		if(b1){
@@ -187,4 +195,10 @@ public class ConnexionBox extends Parent{
 		}
 	}
 
+	private String makePartialIPRegex() {
+		String partialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))" ;
+		String subsequentPartialBlock = "(\\."+partialBlock+")" ;
+		String ipAddress = partialBlock+"?"+subsequentPartialBlock+"{0,3}";
+		return "^"+ipAddress ;
+	}
 }

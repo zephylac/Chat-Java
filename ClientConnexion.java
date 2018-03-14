@@ -1,7 +1,3 @@
-// package Timer;
-
-
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,7 +14,7 @@ import javafx.collections.FXCollections;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.ClassNotFoundException;
-
+import java.net.ConnectException;
 
 public class ClientConnexion{
 
@@ -49,7 +45,7 @@ public class ClientConnexion{
 		this.user = FXCollections.observableList(l2);
 	}
 
-	// Le client envoie un message
+	// Le client send message
 	public void envoieMessage(String str){
 			if(str.startsWith("@")){
 				String[] temp = str.split(" ");
@@ -70,9 +66,9 @@ public class ClientConnexion{
 			}
 	}
 
-	/* Le client se connecte au serveur
-	 *	Retourne vrai si la connexion est autorisée sinon faux
-	*/
+	/* Thr client is trying to connect to the server,
+	 * return true if connection is authorised, false if not
+	 */
 	public boolean seConnecter(String host, int port, String name){
 		this.name = name;
 		this.host = host;
@@ -80,48 +76,52 @@ public class ClientConnexion{
 
 		try {
 			connexion = new Socket(host, port);
-			writer = new ObjectOutputStream(connexion.getOutputStream());
-			reader = new ObjectInputStream(connexion.getInputStream());
-
-			writerString = new PrintWriter(connexion.getOutputStream(), true);
-			readerString = new BufferedInputStream(connexion.getInputStream());
-
-			System.out.println(name + ": Tentative de login au server");
-			writerString.write(name);
-			writerString.flush();
-
-			String response = read();
-			switch(response){
-				case "LOGIN : OK" :
-					t1 = new Thread(new ClientAttente(connexion,name,message,user,writer,reader,writerString,readerString));
-					t1.start();
-					System.out.println(name + ": Le serveur a autorise le login");
-					estConnecte = true;
-					System.out.println(name + ": Lancement de l'attente msg");
-					message.clear();
-					message.add("!CONNECT");
-
-					break;
-				case "LOGIN : KO" :
-					System.out.println(name + ": Le serveur n'a pas autorise le login");
-					estConnecte = false;
-					break;
-			}
-
+			estConnecte = true;
 		} catch (UnknownHostException e) {
 			estConnecte = false;
-			e.printStackTrace();
 		} catch (IOException e) {
 			estConnecte = false;
-			e.printStackTrace();
-		// } catch (ClassNotFoundException e) {
-		// 	e.printStackTrace();
+		}
+		if(estConnecte){
+
+			try{
+				writer = new ObjectOutputStream(connexion.getOutputStream());
+				reader = new ObjectInputStream(connexion.getInputStream());
+
+				writerString = new PrintWriter(connexion.getOutputStream(), true);
+				readerString = new BufferedInputStream(connexion.getInputStream());
+
+				System.out.println(name + ": Tentative de login au server");
+				writerString.write(name);
+				writerString.flush();
+
+				String response = read();
+				switch(response){
+					case "LOGIN : OK" :
+						t1 = new Thread(new ClientAttente(connexion,name,message,user,writer,reader,writerString,readerString));
+						t1.start();
+						System.out.println(name + ": Le serveur a autorise le login");
+						estConnecte = true;
+						System.out.println(name + ": Lancement de l'attente msg");
+						message.clear();
+						message.add("!CONNECT");
+
+						break;
+					case "LOGIN : KO" :
+						System.out.println(name + ": Le serveur n'a pas autorise le login");
+						estConnecte = false;
+						break;
+				}
+			} catch (IOException e) {
+				estConnecte = false;
+				e.printStackTrace();
+			}
 		}
 		return estConnecte;
 	}
 
-	/* Le client se connecte au serveur
-	 *	Retourne vrai si la connexion est autorisée sinon faux
+	/* The client is trying to disconnect from the Server
+	 * Return true if it has disconnected successfully, false if not
 	*/
 	public boolean seDeconnecter(){
 		System.out.println(name + ": Tentative de deconnection au serveur");
@@ -130,21 +130,22 @@ public class ClientConnexion{
 		return true;
 	}
 
+	// Return boolean for connect Status
 	public boolean getEstConnecte(){
 		return estConnecte;
 	}
 
-	//Méthode pour lire les réponses du serveur
-
+	//Return message list
 	public ObservableList<String> getMessage(){
 		return message;
 	}
 
+	//Return user list
 	public ObservableList<UserData> getUser(){
 		return user;
 	}
 
-		//Méthode pour lire les réponses du serveur
+	// Method to read string since readUTF() doesn't work well
 	private String read() throws IOException{
 		try{
 			String response = "";

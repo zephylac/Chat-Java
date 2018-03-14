@@ -1,10 +1,3 @@
-/**
-* @author LeNomDeLEtudiant
-* @version 0.1 : Date : Tue Feb 27 11:53:51 CET 2018
-*
-*/
-// package Timer;
-
 import java.io.IOException;
 import java.lang.ClassNotFoundException;
 
@@ -64,6 +57,10 @@ public class ClientAttente implements Runnable{
 		System.out.println("Socket closed, lost connection?");
 		message.add("!DISCONNECT");
 		user.clear();
+		writer = null;
+		reader = null;
+		writerString = null;
+		readerString = null;
 
 	}
 
@@ -88,8 +85,6 @@ public class ClientAttente implements Runnable{
 				writerString = null;
 				readerString = null;
 
-				//message.add("!DISCONNECT");
-
 				try{
 					sock.close();
 				} catch (IOException e) {
@@ -109,6 +104,7 @@ public class ClientAttente implements Runnable{
 	}
 
 
+	//Method to read string array (messages)
 	private ArrayList<String> readMessageArray() throws IOException{
 		ArrayList<String> list = new ArrayList<String>();
 
@@ -124,6 +120,7 @@ public class ClientAttente implements Runnable{
 		return list;
 	}
 
+	//Method to read UserData array (user)
 	private ArrayList<UserData> readUserArray() throws IOException{
 		ArrayList<UserData> list = new ArrayList<UserData>();
 
@@ -139,7 +136,7 @@ public class ClientAttente implements Runnable{
 		return list;
 	}
 
-	//Méthode pour lire les réponses du serveur
+	//Method to read string since readUTF() not working well
 	private String read() throws IOException{
 		try{
 			String response = "";

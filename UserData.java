@@ -14,27 +14,28 @@ public	class UserData implements Serializable {
 
 	private  static  final  long serialVersionUID = 5318518731L;
 
+	// Constructor
 	public UserData(String username, Color color){
 		this.username = username;
 		this.color = color;
 	}
 
-	public void setColor(Color color){
-		this.color = color;
-	}
-
+	// Return the color
 	public Color getColor(){
 		return color;
 	}
 
+	// Return the username
 	public String getUsername(){
 		return username;
 	}
 
+	// Display method
 	public String toString(){
 		return "nom : " + username + ", couleur : " + color.toString();
 	}
 
+	// Method for deserialisation
 	private	void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 
 			double red = ois.readDouble();
@@ -46,6 +47,7 @@ public	class UserData implements Serializable {
 			this.color = new Color(red,green,blue,opacity);
 	}
 
+	// Method for serialiasation
 	private	void writeObject(ObjectOutputStream oos) throws IOException {
 
 			oos.writeDouble(color.getRed()) ;

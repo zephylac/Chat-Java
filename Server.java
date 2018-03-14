@@ -1,11 +1,9 @@
-// package Timer;
-
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -14,13 +12,8 @@ import java.util.HashMap;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
-import javafx.scene.paint.Color;
-
-public class TimeServer {
-
-
+public class Server {
 	//On initialise des valeurs par défaut
-
 	private int port = 2345;
 	private String host = "127.0.0.1";
 	private ServerSocket server = null;
@@ -28,7 +21,8 @@ public class TimeServer {
 	private List<String> message = new ArrayList<>();
 	private Map<UserData, PrintWriter> userString = new HashMap<>();
 
-	public TimeServer(){
+
+	public Server(){
 		try {
 			server = new ServerSocket(port, 100, InetAddress.getByName(host));
 		} catch (UnknownHostException e) {
@@ -38,7 +32,7 @@ public class TimeServer {
 		}
 	}
 
-	public TimeServer(String pHost, int pPort){
+	public Server(String pHost, int pPort){
 		host = pHost;
 		port = pPort;
 

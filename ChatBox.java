@@ -1,23 +1,9 @@
-import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.scene.Parent;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Text;
-import javafx.scene.effect.Reflection;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.text.Font;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -58,21 +44,22 @@ public class ChatBox extends Parent{
 
 		this.messageList = messageList;
 
+		// Label for ChatBox
 		label = new Label("Discussion");
 		label.setMinWidth(50);
 		label.setMaxWidth(100);
 		label.setAlignment(Pos.CENTER);
 
+		// ChatBox
 		chat.setPrefWidth(600);
 		chat.setPrefHeight(400);
 		chat.setBorder(new Border(new BorderStroke(Color.GRAY,BorderStrokeStyle.SOLID,new CornerRadii(15), BorderWidths.DEFAULT)));
 		chat.setPadding(new Insets(2, 2, 2, 2));
 
+		// VBox containing label and ChatBox
 		vbox.setAlignment(Pos.CENTER);
 		vbox.setPrefWidth(600);
 		vbox.getChildren().addAll(label,chat);
-
-		//chat.appendText("test" + i + "\n");
 
 		this.setTranslateX(360);
 		this.setTranslateY(280);
@@ -106,6 +93,42 @@ public class ChatBox extends Parent{
 									});
 									break;
 								default :
+
+								if(m.startsWith("@")){
+									String cutResponse = m.substring(1);
+									String[] splitted = cutResponse.split(" from ",2);
+									String[] splitted2 = splitted[1].split(" : ",2);
+
+									Text at = new Text("@ ");
+									at.setFill(Color.BLACK);
+									at.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									Text userToColoredName = new Text(splitted[0]);
+									userToColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
+									userToColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									Text from = new Text(" from ");
+									from.setFill(Color.BLACK);
+									from.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									Text userFromColoredName = new Text(splitted2[0]);
+									userFromColoredName.setFill(getUserDataFromString(splitted2[0],userList).getColor());
+									userFromColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									textCo = new Text(" : " + splitted2[1] + "\n");
+									textCo.setFill(Color.BLACK);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									tempList.add(at);
+									tempList.add(userToColoredName);
+									tempList.add(from);
+									tempList.add(userFromColoredName);
+
+									System.out.println("@ " + splitted[0] + " from " + splitted2[0] + " : " + splitted2[1]);
+
+								}
+								else{
+
 									String[] splitted = m.split(" :",2);
 
 									Text userColoredName = new Text(splitted[0]);
@@ -117,7 +140,9 @@ public class ChatBox extends Parent{
 									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
 
+
 									tempList.add(userColoredName);
+								}
 							}
 							tempList.add(textCo);
 						}
@@ -134,8 +159,9 @@ public class ChatBox extends Parent{
 		});
 	}
 
+	// Retrieve userData from string
 	private UserData getUserDataFromString(String user,List<UserData> list){
-		for(UserData u : list){	
+		for(UserData u : list){
 			if(u.getUsername().equals(user)){
 				return u;
 			}
@@ -143,6 +169,7 @@ public class ChatBox extends Parent{
 		return null;
 	}
 
+	//Return ChatBox
 	public TextFlow getChat(){
 		return chat;
 	}
