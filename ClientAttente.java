@@ -25,6 +25,7 @@ public class ClientAttente implements Runnable{
 	private ObservableList<String> message;
 	private ObservableList<UserData> user;
 	private String name;
+	private int status;
 
 		public ClientAttente(Socket sock, String name, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
 		this.sock = sock;
@@ -38,6 +39,8 @@ public class ClientAttente implements Runnable{
 
 		this.writerString = writerString;
 		this.readerString = readerString;
+
+		this.status = 1;
 	}
 
 	public void run(){
@@ -55,7 +58,10 @@ public class ClientAttente implements Runnable{
 		}
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Socket closed, lost connection?");
-		message.add("!DISCONNECT");
+		switch(status){
+			case 0: message.add("!DISCONNECT");break;
+			case 1: message.add("!LOST");break;
+		}
 		user.clear();
 		writer = null;
 		reader = null;
@@ -80,6 +86,7 @@ public class ClientAttente implements Runnable{
 				break;
 			case "LOGOUT : OK" :
 				System.out.println(name + ": Le serveur a bien coupe la connexion");
+				status  = 0;
 				writer = null;
 				reader = null;
 				writerString = null;
@@ -96,6 +103,7 @@ public class ClientAttente implements Runnable{
 
 				break;
 			case "LOGOUT : KO" :
+				status = 1;
 				System.out.println(name + ": Le serveur n'a pas bien coupe la connexion");
 				user.clear();
 				message.clear();

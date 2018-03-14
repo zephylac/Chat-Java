@@ -54,9 +54,9 @@ public class ClientProcessor implements Runnable{
 
 			UserData temp = getUserDataFromString(response);
 			if(temp != null){
-				writerString.write("LOGIN : KO");
+				writerString.write("LOGIN : AE");
 				writerString.flush();
-				System.out.println("Server : LOGIN 	: KO " + response);
+				System.out.println("Server : LOGIN 	: AE ");
 			}
 			else{
 				this.user = new UserData(response, Color.BLACK);
@@ -139,7 +139,12 @@ public class ClientProcessor implements Runnable{
 					UserData sendToData= getUserDataFromString(sendTo);
 
 					System.out.println("Serveur : PM recu du client " + user.getUsername() + "@" + sendTo + " : " + text);
-					message.add("@"+sendTo+ " from "+ user.getUsername()+ " : " + text);
+					System.out.println("@"+sendTo + ":Whispering ("+user.getUsername()+") : " + text);
+					System.out.println("@"+user.getUsername() + ":Whispering to "+sendTo+ " : " + text);
+
+
+					message.add("@"+sendTo + ":Whispering ("+user.getUsername()+") : " + text);
+					message.add("@"+user.getUsername() + ":Whispering to "+sendTo+ " : " + text);
 					updateOne(user,"MESSAGES");
 					updateOne(sendToData,"MESSAGES");
 				}
@@ -223,16 +228,14 @@ public class ClientProcessor implements Runnable{
 	private ArrayList<String> filterArray(String user){
 		ArrayList<String> response = new ArrayList<>();
 		for(String m : message){
-			if (m.startsWith("@")){
+			if(m.startsWith("@")){
 				String cutResponse = m.substring(1);
-				String[] splitted = cutResponse.split(" from ",2);
-				String[] splitted2 = splitted[1].split(" : ",2);
-				System.out.println("SERVER : "+user+" : FilterArray :"+ splitted[0] +","+splitted2[0]);
-				if(splitted[0].equals(user) || splitted2[0].equals(user)){
-					response.add(m);
+				String[] splitted = cutResponse.split(":",2);
+				if(splitted[0].equals(user)){
+					response.add(splitted[1]);
 				}
 			}
-			else{
+			else {
 				response.add(m);
 			}
 		}

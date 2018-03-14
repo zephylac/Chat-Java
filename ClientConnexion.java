@@ -45,7 +45,7 @@ public class ClientConnexion{
 		this.user = FXCollections.observableList(l2);
 	}
 
-	// Le client send message
+	// Client send message
 	public void envoieMessage(String str){
 			if(str.startsWith("@")){
 				String[] temp = str.split(" ");
@@ -66,10 +66,10 @@ public class ClientConnexion{
 			}
 	}
 
-	/* Thr client is trying to connect to the server,
+	/* The client is trying to connect to the server,
 	 * return true if connection is authorised, false if not
 	 */
-	public boolean seConnecter(String host, int port, String name){
+	public int seConnecter(String host, int port, String name){
 		this.name = name;
 		this.host = host;
 		this.port = port;
@@ -105,19 +105,23 @@ public class ClientConnexion{
 						System.out.println(name + ": Lancement de l'attente msg");
 						message.clear();
 						message.add("!CONNECT");
-
-						break;
+						return 0;
 					case "LOGIN : KO" :
 						System.out.println(name + ": Le serveur n'a pas autorise le login");
 						estConnecte = false;
-						break;
+						return 1;
+					case "LOGIN : AE" :
+						System.out.println(name + ": Le serveur n'a pas autorise le login car une personne de ce nom existe deja");
+						estConnecte = false;
+						return 2;
+
 				}
 			} catch (IOException e) {
 				estConnecte = false;
 				e.printStackTrace();
 			}
 		}
-		return estConnecte;
+		return 1;
 	}
 
 	/* The client is trying to disconnect from the Server

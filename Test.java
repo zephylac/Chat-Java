@@ -23,6 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import javafx.application.Platform;
+import javafx.stage.WindowEvent;
 
 
 public class Test extends Application {
@@ -76,11 +77,19 @@ public class Test extends Application {
 					if(user.matches("[a-zA-Z0-9_]+") && user.length() > 0 && user.length() < 20){
 						if(port > 0 && port < 65536){
 							System.out.println("h:"+host+",p:"+port+",u:"+user);
-							if(!c1.seConnecter(host,port,user)){
+							int error = c1.seConnecter(host,port,user);
+							if(error == 1){
 								Alert alert = new Alert(AlertType.ERROR);
 								alert.setTitle("Erreur de connexion");
 								alert.setHeaderText("Connexion impossible !");
 								alert.setContentText("La connexion au serveur a echoué");
+								alert.showAndWait();
+							}
+							else if(error == 2){
+								Alert alert = new Alert(AlertType.ERROR);
+								alert.setTitle("Erreur de connexion");
+								alert.setHeaderText("Connexion impossible !");
+								alert.setContentText("Une personne de ce nom existe deja");
 								alert.showAndWait();
 							}
 							else{
@@ -100,6 +109,12 @@ public class Test extends Application {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			public void handle(WindowEvent we) {
+				c1.seDeconnecter();
+			}
+		});
 	}
 
 }

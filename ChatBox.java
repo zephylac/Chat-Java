@@ -86,6 +86,14 @@ public class ChatBox extends Parent{
 									break;
 								case "!DISCONNECT" :
 									textCo = new Text("Deconnexion au serveur reussi\n");
+									textCo.setFill(Color.ORANGE);
+									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+									Platform.runLater(() ->{
+										connection.switchBtn(true);
+									});
+									break;
+								case "!LOST" :
+									textCo = new Text("Connexion au serveur perdu\n");
 									textCo.setFill(Color.RED);
 									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
 									Platform.runLater(() ->{
@@ -94,42 +102,13 @@ public class ChatBox extends Parent{
 									break;
 								default :
 
-								if(m.startsWith("@")){
-									String cutResponse = m.substring(1);
-									String[] splitted = cutResponse.split(" from ",2);
-									String[] splitted2 = splitted[1].split(" : ",2);
+								if (m.startsWith("Whispering to ")){
+									String cutResponse = m.substring(14);
+									String[] splitted = cutResponse.split(" : ",2);
 
-									Text at = new Text("@ ");
-									at.setFill(Color.BLACK);
-									at.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									Text userToColoredName = new Text(splitted[0]);
-									userToColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
-									userToColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									Text from = new Text(" from ");
-									from.setFill(Color.BLACK);
-									from.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									Text userFromColoredName = new Text(splitted2[0]);
-									userFromColoredName.setFill(getUserDataFromString(splitted2[0],userList).getColor());
-									userFromColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									textCo = new Text(" : " + splitted2[1] + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									tempList.add(at);
-									tempList.add(userToColoredName);
-									tempList.add(from);
-									tempList.add(userFromColoredName);
-
-									System.out.println("@ " + splitted[0] + " from " + splitted2[0] + " : " + splitted2[1]);
-
-								}
-								else{
-
-									String[] splitted = m.split(" :",2);
+									Text begin = new Text("Whispering to ");
+									begin.setFill(Color.GRAY);
+									begin.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
 									Text userColoredName = new Text(splitted[0]);
 									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
@@ -139,7 +118,49 @@ public class ChatBox extends Parent{
 									textCo.setFill(Color.BLACK);
 									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
+									System.out.println("Whispering to " + splitted[0] + " : " + splitted[1]);
 
+									tempList.add(begin);
+									tempList.add(userColoredName);
+
+								}
+								else if(m.startsWith("Whispering (")){
+									String cutResponse = m.substring(12);
+									String[] splitted = cutResponse.split("\\) : ",2);
+
+									Text begin = new Text("Whispering (");
+									begin.setFill(Color.GRAY);
+									begin.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									Text userColoredName = new Text(splitted[0]);
+									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
+									userColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									Text text = new Text(")");
+									text.setFill(Color.GRAY);
+									text.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									textCo = new Text(" : " + splitted[1] + "\n");
+									textCo.setFill(Color.BLACK);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									System.out.println("Whispering (" + splitted[0] + ") : " + splitted[1]);
+
+									tempList.add(begin);
+									tempList.add(userColoredName);
+									tempList.add(text);
+								}
+
+								else{
+									String[] splitted = m.split(" :",2);
+
+									Text userColoredName = new Text(splitted[0]);
+									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
+									userColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+									textCo = new Text(" : " + splitted[1] + "\n");
+									textCo.setFill(Color.BLACK);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
 									tempList.add(userColoredName);
 								}

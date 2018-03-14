@@ -58,7 +58,7 @@ public class ConnexionBox extends Parent{
 
 		//Set default values
 		ip.getInput().setText("127.0.0.1");
-		//port.getInput().setText("2346");
+		port.getInput().setText("2346");
 
 		//Fill the grid
 		grid.add(nom.getInputBox(),0,0);
