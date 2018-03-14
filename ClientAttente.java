@@ -22,15 +22,17 @@ public class ClientAttente implements Runnable{
 	private ObjectInputStream reader = null;
 	private PrintWriter writerString;
 	private BufferedInputStream readerString;
+	private ObservableList<String> other;
 	private ObservableList<String> message;
 	private ObservableList<UserData> user;
 	private String name;
 	private int status;
 
-		public ClientAttente(Socket sock, String name, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
+		public ClientAttente(Socket sock, String name,ObservableList<String> other, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
 		this.sock = sock;
 		this.name = name;
 
+		this.other = other;
 		this.message = message;
 		this.user = user;
 
@@ -59,8 +61,8 @@ public class ClientAttente implements Runnable{
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Socket closed, lost connection?");
 		switch(status){
-			case 0: message.add("!DISCONNECT");break;
-			case 1: message.add("!LOST");break;
+			case 0: other.add("!DISCONNECT");break;
+			case 1: other.add("!LOST");break;
 		}
 		user.clear();
 		writer = null;
@@ -100,6 +102,7 @@ public class ClientAttente implements Runnable{
 
 				user.clear();
 				message.clear();
+				other.clear();
 
 				break;
 			case "LOGOUT : KO" :
@@ -107,6 +110,7 @@ public class ClientAttente implements Runnable{
 				System.out.println(name + ": Le serveur n'a pas bien coupe la connexion");
 				user.clear();
 				message.clear();
+				other.clear();
 				break;
 		}
 	}
@@ -188,7 +192,7 @@ public class ClientAttente implements Runnable{
 			writerString.flush();
 
 			System.out.println(name + " : Messages -> on envoie la taille de notre liste de message, taille : " + message.size());
-			writer.writeInt(message.size()-1);
+			writer.writeInt(message.size());
 			writer.flush();
 
 			ArrayList<String> test = readMessageArray();

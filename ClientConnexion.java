@@ -32,17 +32,20 @@ public class ClientConnexion{
 	private Thread t1;
 	private boolean estConnecte;
 
+	private ObservableList<String> other;
 	private ObservableList<String> message;
 	private ObservableList<UserData> user;
 
 	public ClientConnexion(){
 
 		List<String> l1  = new ArrayList<String>();
-		List<UserData> l2  = new ArrayList<UserData>();
+		List<String> l2  = new ArrayList<String>();
+		List<UserData> l3  = new ArrayList<UserData>();
 
 		estConnecte = false;
-		this.message = FXCollections.observableList(l1);
-		this.user = FXCollections.observableList(l2);
+		this.other = FXCollections.observableList(l1);
+		this.message = FXCollections.observableList(l2);
+		this.user = FXCollections.observableList(l3);
 	}
 
 	// Client send message
@@ -52,6 +55,10 @@ public class ClientConnexion{
 				writerString.write("PM:"+temp[0]+":"+temp[1]);
 				writerString.flush();
 				System.out.println(name + " : Envoie message prive a "+temp[0] + ": " + temp[1]);
+			}
+			else if(str.equals("!color")){
+				other.add("!COLOR");
+				System.out.println(name + " : liste couleur");
 			}
 			else if(str.startsWith("!color")){
 				String temp = str.substring(7);
@@ -98,13 +105,14 @@ public class ClientConnexion{
 				String response = read();
 				switch(response){
 					case "LOGIN : OK" :
-						t1 = new Thread(new ClientAttente(connexion,name,message,user,writer,reader,writerString,readerString));
+						t1 = new Thread(new ClientAttente(connexion,name,other,message,user,writer,reader,writerString,readerString));
 						t1.start();
 						System.out.println(name + ": Le serveur a autorise le login");
 						estConnecte = true;
 						System.out.println(name + ": Lancement de l'attente msg");
 						message.clear();
-						message.add("!CONNECT");
+						other.clear();
+						other.add("!CONNECT");
 						return 0;
 					case "LOGIN : KO" :
 						System.out.println(name + ": Le serveur n'a pas autorise le login");
@@ -137,6 +145,11 @@ public class ClientConnexion{
 	// Return boolean for connect Status
 	public boolean getEstConnecte(){
 		return estConnecte;
+	}
+
+	//Return other list
+	public ObservableList<String> getOther(){
+		return other;
 	}
 
 	//Return message list

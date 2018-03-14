@@ -37,12 +37,16 @@ public class ChatBox extends Parent{
 	private Label label;
 	private VBox vbox = new VBox(10);
 	private Text textCo;
+
+	private ObservableList<String> otherList;
 	private ObservableList<String> messageList;
 	private ObservableList<UserData> userList;
 
-	public ChatBox(ObservableList<String> messageList,ObservableList<UserData> userList,ConnexionBox connection){
+	public ChatBox(ObservableList<String> otherList,ObservableList<String> messageList,ObservableList<UserData> userList,ConnexionBox connection){
 
+		this.otherList = otherList;
 		this.messageList = messageList;
+		this.userList = userList;
 
 		// Label for ChatBox
 		label = new Label("Discussion");
@@ -75,34 +79,7 @@ public class ChatBox extends Parent{
 					if( change.wasAdded()){
 						List<? extends String> list = change.getAddedSubList();
 						for(String m : list){
-							switch(m){
-								case "!CONNECT" :
-									textCo = new Text("Connexion au serveur reussi\n");
-									textCo.setFill(Color.GREEN);
-									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
-									Platform.runLater(() ->{
-										connection.switchBtn(false);
-									});
-									break;
-								case "!DISCONNECT" :
-									textCo = new Text("Deconnexion au serveur reussi\n");
-									textCo.setFill(Color.ORANGE);
-									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
-									Platform.runLater(() ->{
-										connection.switchBtn(true);
-									});
-									break;
-								case "!LOST" :
-									textCo = new Text("Connexion au serveur perdu\n");
-									textCo.setFill(Color.RED);
-									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
-									Platform.runLater(() ->{
-										connection.switchBtn(true);
-									});
-									break;
-								default :
-
-								if (m.startsWith("Whispering to ")){
+									if (m.startsWith("Whispering to ")){
 									String cutResponse = m.substring(14);
 									String[] splitted = cutResponse.split(" : ",2);
 
@@ -164,7 +141,7 @@ public class ChatBox extends Parent{
 
 									tempList.add(userColoredName);
 								}
-							}
+
 							tempList.add(textCo);
 						}
 
@@ -178,7 +155,62 @@ public class ChatBox extends Parent{
 				}
 			}
 		});
+
+		//To avoid duplicate text children
+		List<Text> tempList2 = new ArrayList<>();
+
+		otherList.addListener(new ListChangeListener<String>() {
+			public void onChanged(Change<? extends String> change){
+				while(change.next()){
+					if( change.wasAdded()){
+						List<? extends String> list = change.getAddedSubList();
+						for(String m : list){
+							switch(m){
+								case "!CONNECT" :
+									textCo = new Text("Connexion au serveur reussi\n");
+									textCo.setFill(Color.GREEN);
+									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+									Platform.runLater(() ->{
+										connection.switchBtn(false);
+									});
+									break;
+								case "!DISCONNECT" :
+									textCo = new Text("Deconnexion au serveur reussi\n");
+									textCo.setFill(Color.ORANGE);
+									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+									Platform.runLater(() ->{
+										connection.switchBtn(true);
+									});
+									break;
+								case "!LOST" :
+									textCo = new Text("Connexion au serveur perdu\n");
+									textCo.setFill(Color.RED);
+									textCo.setFont(Font.font("Helvetica", FontWeight.BOLD, 16));
+									Platform.runLater(() ->{
+										connection.switchBtn(true);
+									});
+									break;
+								case "!COLOR" :
+									textCo = new Text("Available color : RED, YELLOW, ORANGE, BLACK, BLUE, GREEN, PINK, PURPLE, CYAN\n");
+									textCo.setFill(Color.GRAY);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									break;
+							}
+							tempList2.add(textCo);
+								// Since it's not JavaFX thread. It will add the messages to
+								// the box when JavaFX thread allow it.
+							Platform.runLater(() ->{
+								chat.getChildren().addAll(tempList2);
+								tempList2.clear();
+							});
+						}
+					}
+				}
+			}
+		});
 	}
+
+
 
 	// Retrieve userData from string
 	private UserData getUserDataFromString(String user,List<UserData> list){

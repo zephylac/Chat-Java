@@ -245,11 +245,16 @@ public class ClientProcessor implements Runnable{
 	//Check if it's a valid color if not black will be chosen
 	private Color checkColor(String color){
 		switch(color.toUpperCase()){
-			case "RED" : return Color.RED;
-			case "ORANGE" : return Color.ORANGE;
-			case "BLACK" : return Color.BLACK;
+			case "RED"    : return Color.RED;
 			case "YELLOW" : return Color.YELLOW;
-			default : return Color.YELLOW;
+			case "ORANGE" : return Color.ORANGE;
+			case "BLACK"  : return Color.BLACK;
+			case "BLUE"   : return Color.BLUE;
+			case "GREEN"  : return Color.GREEN;
+			case "PINK"   : return Color.PINK;
+			case "PURPLE" : return Color.PURPLE;
+			case "CYAN"   : return Color.CYAN;
+			default       : return Color.BLACK;
 		}
 	}
 

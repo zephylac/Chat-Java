@@ -41,13 +41,22 @@ public class Test extends Application {
 		MessageBox mess = new MessageBox();
 		root.getChildren().add(mess);
 
+		UserBox user = new UserBox(c1.getUser());
+		root.getChildren().add(user);
+
+		ConnexionBox connect = new ConnexionBox();
+		root.getChildren().add(connect);
+
+		ChatBox chat = new ChatBox(c1.getOther(),c1.getMessage(),c1.getUser(),connect);
+		root.getChildren().add(chat);
+
 		mess.getButton().setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
 				if(c1 == null || !c1.getEstConnecte()){
 					Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Erreur de connexion");
 					alert.setHeaderText("Connexion inexistante !");
-					alert.setContentText("La connexion au serveur a été perdu");
+					alert.setContentText("La connexion au serveur est inexistante");
 					alert.showAndWait();
 				}
 				else{
@@ -58,16 +67,6 @@ public class Test extends Application {
 				}
 			}
 		});
-
-		UserBox user = new UserBox(c1.getUser());
-		root.getChildren().add(user);
-
-		ConnexionBox connect = new ConnexionBox();
-		root.getChildren().add(connect);
-
-		ChatBox chat = new ChatBox(c1.getMessage(),c1.getUser(),connect);
-		root.getChildren().add(chat);
-
 
 		connect.getCoBtn().setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
