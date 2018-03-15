@@ -4,6 +4,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -16,7 +20,7 @@ public class Server {
 	//On initialise des valeurs par défaut
 	private int port = 2345;
 	private String host = "127.0.0.1";
-	private ServerSocket server = null;
+	private SSLServerSocket server = null;
 	private boolean isRunning = true;
 	private List<String> message = new ArrayList<>();
 	private Map<UserData, PrintWriter> userString = new HashMap<>();
@@ -24,7 +28,11 @@ public class Server {
 
 	public Server(){
 		try {
-			server = new ServerSocket(port, 100, InetAddress.getByName(host));
+
+			SSLServerSocketFactory factory=(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+			server = (SSLServerSocket) factory.createServerSocket(port,100, InetAddress.getByName(host));
+
+			//server = new SSLServerSocket(port, 100, InetAddress.getByName(host));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -37,7 +45,11 @@ public class Server {
 		port = pPort;
 
 		try {
-			server = new ServerSocket(port, 100, InetAddress.getByName(host));
+			//server = new SSLServerSocket(port, 100, InetAddress.getByName(host));
+
+			SSLServerSocketFactory factory=(SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+			server = (SSLServerSocket) factory.createServerSocket(port, 100,InetAddress.getByName(host));
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -54,7 +66,7 @@ public class Server {
 				while(isRunning == true){
 					try {
 						//On attend une connexion d'un client
-						Socket client = server.accept();
+						SSLSocket client = (SSLSocket)server.accept();
 						//Une fois reçue, on la traite dans un thread séparé
 						System.out.println("Connexion cliente reçue -> Nouveau thread");
 						Thread t = new Thread(new ClientProcessor(client,message, userString));

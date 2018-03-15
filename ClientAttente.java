@@ -12,12 +12,14 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 
+import javax.net.ssl.SSLSocket;
+
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
 public class ClientAttente implements Runnable{
 
-	private Socket sock = null;
+	private SSLSocket sock = null;
 	private ObjectOutputStream writer = null;
 	private ObjectInputStream reader = null;
 	private PrintWriter writerString;
@@ -28,7 +30,7 @@ public class ClientAttente implements Runnable{
 	private String name;
 	private int status;
 
-		public ClientAttente(Socket sock, String name,ObservableList<String> other, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
+		public ClientAttente(SSLSocket sock, String name,ObservableList<String> other, ObservableList<String> message, ObservableList<UserData> user, ObjectOutputStream writer, ObjectInputStream reader,PrintWriter writerString, BufferedInputStream readerString){
 		this.sock = sock;
 		this.name = name;
 

@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.lang.ClassNotFoundException;
 
+import javax.net.ssl.SSLSocket;
 
 import javafx.scene.paint.Color;
 
 public class ClientProcessor implements Runnable{
 
 
-	private Socket sock;
+	private SSLSocket sock;
 	private ObjectOutputStream writer = null;
 	private ObjectInputStream reader = null;
 	private PrintWriter writerString;
@@ -28,7 +29,7 @@ public class ClientProcessor implements Runnable{
 	private Map<UserData, PrintWriter> userString;
 	private UserData user;
 
-	public ClientProcessor(Socket pSock, List<String> message, Map<UserData, PrintWriter> userString){
+	public ClientProcessor(SSLSocket pSock, List<String> message, Map<UserData, PrintWriter> userString){
 		sock = pSock;
 		this.message = message;
 		this.userString = userString;

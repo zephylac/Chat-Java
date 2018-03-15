@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
@@ -19,7 +22,7 @@ import java.net.ConnectException;
 public class ClientConnexion{
 
 
-	private Socket connexion = null;
+	private SSLSocket connexion = null;
 	private ObjectOutputStream writer = null;
 	private ObjectInputStream reader = null;
 
@@ -82,7 +85,11 @@ public class ClientConnexion{
 		this.port = port;
 
 		try {
-			connexion = new Socket(host, port);
+
+			SSLSocketFactory factory=(SSLSocketFactory) SSLSocketFactory.getDefault();
+			connexion=(SSLSocket) factory.createSocket(host,port);
+
+			//connexion = new SSLSocket(host, port);
 			estConnecte = true;
 		} catch (UnknownHostException e) {
 			estConnecte = false;
