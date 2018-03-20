@@ -83,6 +83,15 @@ public class ClientAttente implements Runnable{
 			case "USERS" :
 				processUser();
 				break;
+			case "REMOVEUSERS" :
+				try{
+					String removedUser = read();
+					user.remove(getUserDataFromString(removedUser));
+					System.out.println(name + ": REMOVEUSERS : "+removedUser);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
 			case "MESSAGES" :
 				processMessage();
 				break;
@@ -175,10 +184,6 @@ public class ClientAttente implements Runnable{
 			writerString.write("USERS");
 			writerString.flush();
 
-			//System.out.println(name + " : Users -> on envoie la taille de notre liste d'user, taille : " + user.size());
-			//writer.writeInt(user.size());
-			//writer.flush();
-
 			user.setAll(readUserArray());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -205,5 +210,15 @@ public class ClientAttente implements Runnable{
 	private void processBoth(){
 		processUser();
 		processMessage();
+	}
+
+	// Retrieve userData from string
+	private UserData getUserDataFromString(String username){
+		for(UserData u : user){
+			if(u.getUsername().equals(username)){
+				return u;
+			}
+		}
+		return null;
 	}
 }

@@ -60,12 +60,41 @@ public class ClientConnexion{
 				other.add("!COLOR");
 				System.out.println(name + " : liste couleur");
 			}
+			else if(str.equals("!smiley")){
+				other.add("!SMILEY");
+				System.out.println(name + " : liste smiley");
+			}
+			else if(str.equals("!help")){
+				other.add("!COLOR");
+				other.add("!SMILEY");
+				System.out.println(name + " : liste help");
+			}
 			else if(str.startsWith("!color")){
 				String temp = str.substring(7);
 				writerString.write("COLOR:"+temp);
 				writerString.flush();
 				System.out.println(name + " : Couleur : "+temp);
 				}
+			else if(str.equals("!potato")){
+				writerString.write("POTATO");
+				writerString.flush();
+				System.out.println(name + " : potato");
+			}
+			else if(str.equals("!denis")){
+				writerString.write("DENIS");
+				writerString.flush();
+				System.out.println(name + " : denis");
+			}
+			else if(str.equals("!pepe")){
+				writerString.write("PEPE");
+				writerString.flush();
+				System.out.println(name + " : pepe");
+			}
+			else if(str.equals("!nyan")){
+				writerString.write("NYAN");
+				writerString.flush();
+				System.out.println(name + " : nyan");
+			}
 			else{
 				writerString.write("MSG:"+str);
 				writerString.flush();

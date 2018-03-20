@@ -31,6 +31,11 @@ import java.io.StringReader;
 import javax.xml.bind.*;
 import javax.xml.transform.stream.StreamSource;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import javafx.scene.Node;
+
 public class ChatBox extends Parent{
 
 	private TextFlow chat = new TextFlow();
@@ -70,7 +75,7 @@ public class ChatBox extends Parent{
 		this.getChildren().add(vbox);
 
 		//To avoid duplicate text children
-		List<Text> tempList = new ArrayList<>();
+		List<Node> tempList = new ArrayList<>();
 
 
 		messageList.addListener(new ListChangeListener<String>() {
@@ -91,14 +96,38 @@ public class ChatBox extends Parent{
 									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
 									userColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
-									textCo = new Text(" : " + splitted[1] + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									System.out.println("Whispering to " + splitted[0] + " : " + splitted[1]);
+									Image image = checkImg(splitted[1]);
 
 									tempList.add(begin);
 									tempList.add(userColoredName);
+
+									if(image != null){
+										ImageView iv = new ImageView();
+										iv.setPreserveRatio(true);
+										iv.setFitHeight(50);
+										iv.setImage(image);
+
+										Text tempTxt = new Text(" : ");
+										tempTxt.setFill(Color.BLACK);
+										tempTxt.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										textCo = new Text("\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										tempList.add(tempTxt);
+										tempList.add(iv);
+
+									}
+									else{
+										textCo = new Text(" : " + splitted[1] + "\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									}
+
+									System.out.println("Whispering to " + splitted[0] + " : " + splitted[1]);
+
+
 
 								}
 								else if(m.startsWith("Whispering (")){
@@ -117,17 +146,40 @@ public class ChatBox extends Parent{
 									text.setFill(Color.GRAY);
 									text.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
-									textCo = new Text(" : " + splitted[1] + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
-									System.out.println("Whispering (" + splitted[0] + ") : " + splitted[1]);
+									Image image = checkImg(splitted[1]);
 
 									tempList.add(begin);
 									tempList.add(userColoredName);
 									tempList.add(text);
-								}
 
+									if(image != null){
+										ImageView iv = new ImageView();
+										iv.setPreserveRatio(true);
+										iv.setFitHeight(50);
+										iv.setImage(image);
+
+										Text tempTxt = new Text(" : ");
+										tempTxt.setFill(Color.BLACK);
+										tempTxt.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										textCo = new Text("\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										tempList.add(tempTxt);
+										tempList.add(iv);
+
+									}
+									else{
+										textCo = new Text(" : " + splitted[1] + "\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									}
+
+
+									System.out.println("Whispering (" + splitted[0] + ") : " + splitted[1]);
+
+								}
 								else{
 									String[] splitted = m.split(" :",2);
 
@@ -135,11 +187,34 @@ public class ChatBox extends Parent{
 									userColoredName.setFill(getUserDataFromString(splitted[0],userList).getColor());
 									userColoredName.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 
-									textCo = new Text(" : " + splitted[1] + "\n");
-									textCo.setFill(Color.BLACK);
-									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
-
 									tempList.add(userColoredName);
+
+									Image image = checkImg(splitted[1]);
+
+									if(image != null){
+										ImageView iv = new ImageView();
+										iv.setPreserveRatio(true);
+										iv.setFitHeight(50);
+										iv.setImage(image);
+
+										Text tempTxt = new Text(" : ");
+										tempTxt.setFill(Color.BLACK);
+										tempTxt.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										textCo = new Text("\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+
+										tempList.add(tempTxt);
+										tempList.add(iv);
+
+										image = null;
+									}
+									else{
+										textCo = new Text(" : " + splitted[1] + "\n");
+										textCo.setFill(Color.BLACK);
+										textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									}
 								}
 
 							tempList.add(textCo);
@@ -195,6 +270,11 @@ public class ChatBox extends Parent{
 									textCo.setFill(Color.GRAY);
 									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
 									break;
+								case "!SMILEY" :
+									textCo = new Text("Available smiley : !DENIS, !NYAN, !PEPE, !POTATO\n");
+									textCo.setFill(Color.GRAY);
+									textCo.setFont(Font.font("Tahoma",FontWeight.NORMAL,12));
+									break;
 							}
 							tempList2.add(textCo);
 								// Since it's not JavaFX thread. It will add the messages to
@@ -225,5 +305,27 @@ public class ChatBox extends Parent{
 	//Return ChatBox
 	public TextFlow getChat(){
 		return chat;
+	}
+
+	public Image checkImg(String str){
+		Image image;
+		switch(str.toUpperCase()){
+			case "!POTATO":
+				image = new Image("./image/potato.png", true);
+				break;
+			case "!NYAN" :
+				image = new Image("./image/nyan.png", true);
+				break;
+			case "!DENIS" :
+			System.out.println("DENIS");
+				image = new Image("./image/denis.jpg", true);
+				break;
+			case "!PEPE":
+				image = new Image("./image/pepe.jpeg", true);
+				break;
+			default :
+				image = null;
+		}
+		return image;
 	}
 }

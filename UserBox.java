@@ -25,6 +25,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import javafx.scene.Node;
+
 import javafx.application.Platform;
 
 public class UserBox extends Parent{
@@ -60,23 +62,42 @@ public class UserBox extends Parent{
 		this.userList = userList;
 
 		List<Text> tempList = new ArrayList<>();
+		List<Text> tempList2 = new ArrayList<>();
 
 		// Adding listener on the list
 		userList.addListener(new ListChangeListener<UserData>() {
 			public void onChanged(Change<? extends UserData> change){
 				while(change.next()){
+					if(change.wasRemoved()){
+						List<? extends UserData> list2 = change.getRemoved();
+						for(UserData u : list2){
+							for(Node n : user.getChildren()){
+								Platform.runLater(() ->{
+									String tempStr = ((Text)n).getText().replaceAll("(\\n)", "");
+									if(u.getUsername().equals(tempStr)){
+										tempList2.add((Text)n);
+									}
+								});
+							}
+							Platform.runLater(() ->{
+								user.getChildren().removeAll(tempList2);
+								tempList2.clear();
+							});
+						}
+					}
+
 					if(change.wasAdded()){
 						List<? extends UserData> list = change.getAddedSubList();
 						for(UserData u : list){
 							tempList.add(userDataToText(u));
 						}
+						Platform.runLater(() ->{
+							user.getChildren().clear();
+							user.getChildren().addAll(tempList);
+							tempList.clear();
+						});
 					}
 				}
-				Platform.runLater(() ->{
-					user.getChildren().clear();
-					user.getChildren().addAll(tempList);
-					tempList.clear();
-				});
 			}
 		});
 	}

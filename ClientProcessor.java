@@ -89,7 +89,10 @@ public class ClientProcessor implements Runnable{
 			reader = null;
 			sock.close();
 
-			updateAll("USERS");
+			//updateAll("REMOVEUSERS");
+
+			//updateAll(user.getUsername());
+
 
 		}catch(IOException e){
 			e.printStackTrace();
@@ -138,7 +141,7 @@ public class ClientProcessor implements Runnable{
 
 					UserData sendToData= getUserDataFromString(sendTo);
 
-					System.out.println("Serveur : PM recu du client " + user.getUsername() + "@" + sendTo + " : " + text);
+					System.out.println("Server : PM recu du client " + user.getUsername() + "@" + sendTo + " : " + text);
 					System.out.println("@"+sendTo + ":Whispering ("+user.getUsername()+") : " + text);
 					System.out.println("@"+user.getUsername() + ":Whispering to "+sendTo+ " : " + text);
 
@@ -151,16 +154,16 @@ public class ClientProcessor implements Runnable{
 				else if (response.startsWith("MSG:") ){
 					String cutResponse = response.substring(4);
 					message.add(user.getUsername() + " : " + cutResponse);
-					System.out.println("Serveur : MSG recu du client "+ user.getUsername() +" : "+ cutResponse);
+					System.out.println("Server : MSG recu du client "+ user.getUsername() +" : "+ cutResponse);
 					updateAll("MESSAGES");
 				}
 				else if (response.startsWith("COLOR:")){
 					String cutResponse = response.substring(6);
 					userString.remove(user);
-					user = new UserData(user.getUsername(), checkColor(cutResponse));
+					this.user = new UserData(user.getUsername(), checkColor(cutResponse));
 					//user.setColor(checkColor(cutResponse));
 					userString.put(user, writerString);
-					System.out.println("Serveur : Couleur recu du client "+ user.getUsername() +" : "+ checkColor(cutResponse).toString());
+					System.out.println("Server : Couleur recu du client "+ user.getUsername() +" : "+ checkColor(cutResponse).toString());
 					updateAll("USERS");
 				}
 				else{
@@ -185,6 +188,26 @@ public class ClientProcessor implements Runnable{
 							writer.flush();
 							System.out.println("Server : envoie array : " + ArrayMessageToSend + " -> " + user.getUsername());
 							break;
+						case "POTATO":
+							message.add(user.getUsername() + " :!POTATO");
+							System.out.println("Server : MSG POTATO recu du client "+ user.getUsername());
+							updateAll("MESSAGES");
+							break;
+						case "DENIS":
+							message.add(user.getUsername() + " :!DENIS");
+							System.out.println("Server : MSG DENIS recu du client "+ user.getUsername());
+							updateAll("MESSAGES");
+							break;
+						case "NYAN":
+							message.add(user.getUsername() + " :!NYAN");
+							System.out.println("Server : MSG NYAN recu du client "+ user.getUsername());
+							updateAll("MESSAGES");
+							break;
+						case "PEPE":
+							message.add(user.getUsername() + " :!PEPE");
+							System.out.println("Server : MSG PEPE recu du client "+ user.getUsername());
+							updateAll("MESSAGES");
+							break;
 
 						default :toSend = "Commande inconnu !";break;
 					}
@@ -199,7 +222,8 @@ public class ClientProcessor implements Runnable{
 		// User has bee disconnected (lost connection?, remote closed?)
 		System.out.println("Server : username : socket ferme");
 		userString.remove(user);
-		updateAll("USERS");
+		updateAll("REMOVEUSERS");
+		updateAll(user.getUsername());
 
 	}
 
