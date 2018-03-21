@@ -23,8 +23,9 @@ import java.util.function.UnaryOperator;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 
-//import org.apache.commons.validator.routines.InetAddressValidator;
-
+/* This class is constituted of 3 InputBox and Button
+ *
+ */
 public class ConnexionBox extends Parent{
 
 	private InputBox nom  = new InputBox("Nom");
@@ -88,44 +89,36 @@ public class ConnexionBox extends Parent{
 		this.setTranslateY(0);
 		this.getChildren().add(grid);
 
-
-		// Creates Binding to check values
+		/* Creates Binding to check input values
+		 */
 
 		BooleanBinding userField = Bindings.createBooleanBinding(()->{
-			if (nom.getInput().getText().length() != 0){
-				return true;
-			}
-			else{
-				return false;
-			}
+			if (nom.getInput().getText().length() != 0){return true;}
+			return false;
 		},nom.getInput().textProperty());
+
 		BooleanBinding ipField   = Bindings.createBooleanBinding(()->{
-			if (ip.getInput().getText().length() != 0 ){
-					return true;
-			}
+			if (ip.getInput().getText().length() != 0 ){return true;}
 			return false;
 		},ip.getInput().textProperty());
+
 		BooleanBinding portField = Bindings.createBooleanBinding(()->{
 			if (port.getInput().getText().length() != 0){
 				int test = Integer.parseInt(port.getInput().getText());
-				if( test > 0 && test < 65536){
-					return true;
-				}
+				if( test > 0 && test < 65536){return true;}
 			}
 			return false;
 		},port.getInput().textProperty());
 
+		// Button is disabled if either one of the bindings is false
 		btnConnecte.disableProperty().bind(userField.not().or(ipField.not().or(portField.not())));
 
 		// Set TextFormatter on IP input to only allow valid ip
 		String regex = makePartialIPRegex();
 		final UnaryOperator<Change> ipAddressFilter = c -> {
 		String text = c.getControlNewText();
-			if  (text.matches(regex)) {
-				return c ;
-			} else {
-				return null ;
-			}
+			if  (text.matches(regex)) {return c ;}
+			else {return null ;}
 		};
 
 		ip.getInput().setTextFormatter(new TextFormatter<>(ipAddressFilter));
@@ -134,11 +127,8 @@ public class ConnexionBox extends Parent{
 		String regex2 = "^$|^(0|[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])";
 		final UnaryOperator<Change> portFilter = c -> {
 		String text = c.getControlNewText();
-			if  (text.matches(regex2)) {
-				return c ;
-			} else {
-				return null ;
-			}
+			if  (text.matches(regex2)) {return c ;}
+			else {return null ;}
 		};
 
 		port.getInput().setTextFormatter(new TextFormatter<>(portFilter));
@@ -168,12 +158,8 @@ public class ConnexionBox extends Parent{
 	// Get port input
 	public int getPort(){
 		String temp = port.getInput().getText();
-		if(!temp.equals("")){
-			return Integer.parseInt(temp);
-		}
-		else{
-			return -1;
-		}
+		if(!temp.equals("")){return Integer.parseInt(temp);}
+		else{return -1;}
 	}
 
 	// Switch between connect and disconnect button
@@ -195,6 +181,7 @@ public class ConnexionBox extends Parent{
 		}
 	}
 
+	/* Return a string that filter Ip Adress */
 	private String makePartialIPRegex() {
 		String partialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))" ;
 		String subsequentPartialBlock = "(\\."+partialBlock+")" ;

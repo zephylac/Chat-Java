@@ -307,6 +307,7 @@ public class ChatBox extends Parent{
 		return chat;
 	}
 
+	// This method takes a String as parameter and return an Image if it's valid , null if not
 	public Image checkImg(String str){
 		Image image;
 		switch(str.toUpperCase()){

@@ -64,10 +64,16 @@ public class UserBox extends Parent{
 		List<Text> tempList = new ArrayList<>();
 		List<Text> tempList2 = new ArrayList<>();
 
+		/* To avoid duplicate children inside the TextFlow, 
+		 * we need to use a temporary list
+		 *And since it's not javafx Main thread we use Platform.runLater
+		 */
+
 		// Adding listener on the list
 		userList.addListener(new ListChangeListener<UserData>() {
 			public void onChanged(Change<? extends UserData> change){
 				while(change.next()){
+					// If user(s) was/were removed
 					if(change.wasRemoved()){
 						List<? extends UserData> list2 = change.getRemoved();
 						for(UserData u : list2){
@@ -85,7 +91,7 @@ public class UserBox extends Parent{
 							});
 						}
 					}
-
+					// If user(s) was/were added
 					if(change.wasAdded()){
 						List<? extends UserData> list = change.getAddedSubList();
 						for(UserData u : list){

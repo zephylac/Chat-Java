@@ -26,7 +26,7 @@ import javafx.application.Platform;
 import javafx.stage.WindowEvent;
 
 
-public class Test extends Application {
+public class Client extends Application {
 	private ClientConnexion c1 = new ClientConnexion();
 
 	public static void main(String[] args) {

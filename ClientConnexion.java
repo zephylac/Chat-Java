@@ -48,7 +48,10 @@ public class ClientConnexion{
 		this.user = FXCollections.observableList(l3);
 	}
 
-	// Client send message
+	/* Client send message
+	 * If user request for image / help then
+	 * message is treated differently
+	 */
 	public void envoieMessage(String str){
 			if(str.startsWith("@")){
 				String[] temp = str.split(" ");

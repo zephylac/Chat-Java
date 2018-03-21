@@ -45,10 +45,9 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
-	// Connect user to the server
+	// User is connecting to the server
 	public void connexionUser(){
 		try{
-			// String response = (String)(reader.readObject());
 			String response = read();
 			System.out.println("Server : Login recu de " + response);
 
@@ -75,7 +74,7 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
-	// Disconnect user from the server
+	// User is disconnecting from the server
 	public void deconnexionUser(){
 		try{
 			System.out.println("Server : Logout recu de " + user.getUsername());
@@ -90,16 +89,15 @@ public class ClientProcessor implements Runnable{
 			sock.close();
 
 			//updateAll("REMOVEUSERS");
-
 			//updateAll(user.getUsername());
-
-
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
-	// UpdateAll user with a msg
+	/* Method UpdateAll :
+	 * Send a message to all users
+	 */
 	public void updateAll(String msg){
 		System.out.println("Server : Envoie de requete d'update a tous les utilisateurs sur " + msg);
 		for(Map.Entry<UserData,PrintWriter> u : userString.entrySet()){
@@ -108,7 +106,9 @@ public class ClientProcessor implements Runnable{
 		}
 	}
 
-	// UpdateOne user with a msg
+	/* Method UpdateOne :
+	 * Send a message to a specific
+	 */
 	public void updateOne(UserData userData, String msg){
 			userString.get(userData).write(msg);
 			userString.get(userData).flush();
@@ -152,12 +152,14 @@ public class ClientProcessor implements Runnable{
 					updateOne(sendToData,"MESSAGES");
 				}
 				else if (response.startsWith("MSG:") ){
+					// Message
 					String cutResponse = response.substring(4);
 					message.add(user.getUsername() + " : " + cutResponse);
 					System.out.println("Server : MSG recu du client "+ user.getUsername() +" : "+ cutResponse);
 					updateAll("MESSAGES");
 				}
 				else if (response.startsWith("COLOR:")){
+					// Color
 					String cutResponse = response.substring(6);
 					userString.remove(user);
 					this.user = new UserData(user.getUsername(), checkColor(cutResponse));
@@ -171,7 +173,6 @@ public class ClientProcessor implements Runnable{
 					switch(response.toUpperCase()){
 						case "LOGOUT": deconnexionUser();break;
 						case "USERS" :
-							//nb = reader.readInt();
 
 							ArrayUserToSend = new ArrayList<UserData>(userString.keySet());
 							writer.writeObject(ArrayUserToSend);
@@ -255,18 +256,19 @@ public class ClientProcessor implements Runnable{
 			if(m.startsWith("@")){
 				String cutResponse = m.substring(1);
 				String[] splitted = cutResponse.split(":",2);
+				//If message belongs to user we add it to the list
 				if(splitted[0].equals(user)){
 					response.add(splitted[1]);
 				}
 			}
-			else {
-				response.add(m);
-			}
+			else {response.add(m);}
 		}
 		return response;
 	}
 
-	//Check if it's a valid color if not black will be chosen
+	/* Takes a String as parameter and return a valid color
+	 * Check if it's a valid color if not black will be returned by default
+	 */
 	private Color checkColor(String color){
 		switch(color.toUpperCase()){
 			case "RED"    : return Color.RED;

@@ -10,6 +10,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.shape.Rectangle;
 
+
+/* This class is used as an input for message */
 public class MessageBox extends Parent{
 
 	private Button btnSend = new Button("Envoyer");

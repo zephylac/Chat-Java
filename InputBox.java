@@ -11,13 +11,17 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.text.TextAlignment;
 
+
+/* This class is used as an Input
+ * It's constituted of a Label and a TextField
+ */
 public class InputBox extends Parent{
 
 	private Label label;
 	private TextField input = new TextField();
 	private HBox hbox = new HBox(40);
 
-	//str -> text for label
+	/* String is used for Label */
 	public InputBox(String str){
 
 		// Label for input box
