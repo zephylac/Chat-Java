@@ -2,44 +2,44 @@
 
 This chat uses JavaFX as Graphical Engine.
 
-### Builable Java (with Java9 jlink)
+## Builable Java (with Java9 jlink)
 
-## Clean build
+### Clean build
 `./gradlew clean`
 
-## Build Client
+### Build Client
 `./gradlew chat:link`
 
-## Build Server
+### Build Server
 `./gradlew server:link`
 
-## Build Both
+### Build Both
 `./gradlew linkAll`
 
-## Launch Client
+### Launch Client
 ```
 cd chat/build/dist/bin/
 ./chat
 ```
 
-## Launch Server
+### Launch Server
 ```
 cd server/build/dist/bin/
 ./server
 ```
-### Compilation
+## Compilation
 
 ```
 cd chat/src/main/java/chat
 javac *.java -Xlint;
 ```
 
-## Launch server
+### Launch server
 ```
 java Main
 ```
 
-## Launch Client
+### Launch Client
 ```
 java Client
 ```
