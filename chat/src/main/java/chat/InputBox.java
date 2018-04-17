@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.scene.Parent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;

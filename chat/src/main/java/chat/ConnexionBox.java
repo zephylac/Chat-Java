@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.Parent;
@@ -15,7 +17,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.ColumnConstraints;
 
 import javafx.beans.binding.BooleanBinding;
-import javax.naming.Binding;
+// import javax.naming.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
 

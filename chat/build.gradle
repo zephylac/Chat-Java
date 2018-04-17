@@ -1,0 +1,30 @@
+group 'chat'
+version '1.0.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.9
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'chat.Client'
+    }
+}
+
+def java_home = System.getenv('JAVA_HOME')
+task link(type: Exec) {
+    dependsOn 'clean'
+    dependsOn 'jar'
+
+    workingDir 'build'
+
+    commandLine "/usr/lib/jvm/java-10-jdk/bin/jlink", '--module-path', "libs${File.pathSeparatorChar}/usr/lib/jvm/java-10-jdk/jmods", '--add-modules', 'chat', '--launcher', 'chat=chat/chat.Client', '--output', 'dist', '--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'
+}

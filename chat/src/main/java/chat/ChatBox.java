@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.Parent;
@@ -28,8 +30,8 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 
 import java.io.StringReader;
-import javax.xml.bind.*;
-import javax.xml.transform.stream.StreamSource;
+// import javax.xml.bind.*;
+// import javax.xml.transform.stream.StreamSource;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;

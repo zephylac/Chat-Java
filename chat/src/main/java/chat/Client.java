@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,7 +32,7 @@ public class Client extends Application {
 	private ClientConnexion c1 = new ClientConnexion();
 
 	public static void main(String[] args) {
-		Application.launch(Test.class, args);
+		Application.launch(Client.class, args);
 	}
 
 	public void start(Stage primaryStage) {

@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.scene.paint.Color;
 import javafx.scene.Parent;
 import javafx.scene.text.Text;

@@ -1,0 +1,11 @@
+task cleanAll(type: GradleBuild) {
+    tasks = ['chat:clean']
+}
+
+task linkAll(type: GradleBuild) {
+    tasks = ['chat:link']
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
+}

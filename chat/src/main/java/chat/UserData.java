@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.scene.paint.Color;
 
 import java.io.IOException;

@@ -1,3 +1,5 @@
+package chat;
+
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -64,7 +66,7 @@ public class UserBox extends Parent{
 		List<Text> tempList = new ArrayList<>();
 		List<Text> tempList2 = new ArrayList<>();
 
-		/* To avoid duplicate children inside the TextFlow, 
+		/* To avoid duplicate children inside the TextFlow,
 		 * we need to use a temporary list
 		 *And since it's not javafx Main thread we use Platform.runLater
 		 */
