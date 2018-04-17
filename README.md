@@ -4,17 +4,13 @@ This chat uses JavaFX as Graphical Engine.
 
 ## Builable Java (with Java9 jlink)
 
-### Clean build
-`./gradlew clean`
+### Clean build : `./gradlew clean`
 
-### Build Client
-`./gradlew chat:link`
+### Build Client : `./gradlew chat:link`
 
-### Build Server
-`./gradlew server:link`
+### Build Server :`./gradlew server:link`
 
-### Build Both
-`./gradlew linkAll`
+### Build Both : `./gradlew linkAll`
 
 ### Launch Client
 ```
