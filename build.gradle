@@ -1,9 +1,9 @@
 task cleanAll(type: GradleBuild) {
-    tasks = ['chat:clean']
+    tasks = ['chat:clean', 'server:clean']
 }
 
 task linkAll(type: GradleBuild) {
-    tasks = ['chat:linkClient', 'chat:linkServer']
+    tasks = ['chat:link', 'server:link']
 }
 
 task wrapper(type: Wrapper) {

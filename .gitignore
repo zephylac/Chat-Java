@@ -1,2 +1,4 @@
 *.class
 .gradle
+chat/build
+server/build

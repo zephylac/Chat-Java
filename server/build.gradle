@@ -1,4 +1,4 @@
-group 'chat'
+group 'server'
 version '1.0.0-SNAPSHOT'
 
 apply plugin: 'java'
@@ -26,5 +26,5 @@ task link(type: Exec) {
 
     workingDir 'build'
 
-    commandLine "/usr/lib/jvm/java-10-jdk/bin/jlink", '--module-path', "libs${File.pathSeparatorChar}/usr/lib/jvm/java-10-jdk/jmods", '--add-modules', 'chat', '--launcher', 'chat=chat/chat.Client', '--output', 'dist', '--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'
+    commandLine "/usr/lib/jvm/java-10-jdk/bin/jlink", '--module-path', "libs${File.pathSeparatorChar}/usr/lib/jvm/java-10-jdk/jmods", '--add-modules', 'server', '--launcher', 'server=server/server.Main', '--output', 'dist', '--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages'
 }
